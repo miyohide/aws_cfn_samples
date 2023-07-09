@@ -1,6 +1,33 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: Create VPC and subnets
 
+Metadata:
+  "AWS::CloudFormation::Interface":
+    ParameterGroups:
+      - Label:
+          default: "YourProjectName"
+        Parameters:
+          - ProjectName
+      - Label:
+          default: "Network Configuration"
+        Parameters:
+          - VPCCIDER
+          - PublicSubnet1CIDER
+          - PublicSubnet2CIDER
+          - PrivateSubnet1CIDER
+          - PrivateSubnet2CIDER
+    ParameterLabels:
+      VPCCIDER:
+        default: VPC CIDER
+      PublicSubnet1CIDER:
+        default: Public Subnet1 CIDER
+      PublicSubnet2CIDER:
+        default: Public Subnet2 CIDER
+      PrivateSubnet1CIDER:
+        default: Private Subnet1 CIDER
+      PrivateSubnet2CIDER:
+        default: Private Subnet2 CIDER
+
 Parameters:
   ProjectName:
     Type: String
