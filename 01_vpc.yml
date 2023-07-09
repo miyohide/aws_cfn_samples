@@ -1,60 +1,84 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Hands-on template for VPC
+Description: Create VPC and subnets
+
+Parameters:
+  ProjectName:
+    Type: String
+
+  VPCCIDER:
+    Type: String
+    Default: 10.0.0.0/16
+
+  PublicSubnet1CIDER:
+    Type: String
+    Default: 10.0.0.0/24
+
+  PublicSubnet2CIDER:
+    Type: String
+    Default: 10.0.1.0/24
+
+  PrivateSubnet1CIDER:
+    Type: String
+    Default: 10.0.2.0/24
+
+  PrivateSubnet2CIDER:
+    Type: String
+    Default: 10.0.3.0/24
 
 Resources:
   # VPCの作成
   VPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: 10.0.0.0/16
+      CidrBlock: !Ref VPCCIDER
       InstanceTenancy: default
       EnableDnsSupport: true
       EnableDnsHostnames: true
       Tags:
         - Key: Name
-          Value: MyProject-vpc
+          Value: !Sub ${ProjectName}-vpc
   # 一つ目のPublic Subnetの作成
   PublicSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
-      CidrBlock: 10.0.0.0/24
+      CidrBlock: !Ref PublicSubnet1CIDER
       VpcId: !Ref VPC
       AvailabilityZone: !Select [ 0, !GetAZs ]
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: MyProject-public-subnet1
+          Value: !Sub ${ProjectName}-public-subnet1
   # 二つ目のPublic Subnetの作成
   PublicSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
-      CidrBlock: 10.0.1.0/24
+      CidrBlock: !Ref PublicSubnet2CIDER
       VpcId: !Ref VPC
       AvailabilityZone: !Select [ 1, !GetAZs ]
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: MyProject-public-subnet1
+          Value: !Sub ${ProjectName}-public-subnet1
   # 一つ目のPrivate Subnet1を作成
   PrivateSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
-      CidrBlock: 10.0.2.0/24
+      CidrBlock: !Ref PrivateSubnet1CIDER
       VpcId: !Ref VPC
       AvailabilityZone: !Select [ 0, !GetAZs ]
       Tags:
         - Key: Name
-          Value: MyProject-private-subnet1
+          Value: !Sub ${ProjectName}-private-subnet1
   # 二つ目のPrivate Subnet2を作成
   PrivateSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
-      CidrBlock: 10.0.3.0/24
+      CidrBlock: !Ref PrivateSubnet2CIDER
       VpcId: !Ref VPC
       AvailabilityZone: !Select [ 1, !GetAZs ]
       Tags:
         - Key: Name
-          Value: MyProject-private-subnet2
+          Value: !Sub ${ProjectName}-private-subnet2
 
   # Internet Gatewayを作成
   VPCIGW:
@@ -62,7 +86,7 @@ Resources:
     Properties:
       Tags:
         - Key: Name
-          Value: MyProject-igw
+          Value: !Sub ${ProjectName}-igw
 
   # Internet Gatewayのアタッチ
   VPCIGWAttach:
@@ -78,7 +102,7 @@ Resources:
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: MyProject-public-route-table
+          Value: !Sub ${ProjectName}-public-route-table
 
   # Routing定義
   PublicRoute:
