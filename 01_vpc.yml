@@ -64,6 +64,12 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub ${ProjectName}-vpc
+  SSMVPCId:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /${ProjectName}/VPCId
+      Type: String
+      Value: !Ref VPC
   # 一つ目のPublic Subnetの作成
   PublicSubnet1:
     Type: AWS::EC2::Subnet
