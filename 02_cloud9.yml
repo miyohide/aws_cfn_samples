@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Create Cloud9
+
+Parameters:
+  ProjectName:
+    Type: String
+  PublicSubnet1:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Subnet::Id>
+    Default: /myproj01/PublicSubnet1Id
+
+Resources:
+  Cloud9:
+    Type: AWS::Cloud9::EnvironmentEC2
+    Properties:
+      AutomaticStopTimeMinutes: 30
+      ConnectionType: CONNECT_SSM
+      Description: My Cloud9
+      ImageId: amazonlinux-2-x86_64
+      InstanceType: t2.micro
+      Name: !Sub ${ProjectName}-Cloud9
+      SubnetId: !Ref PublicSubnet1
