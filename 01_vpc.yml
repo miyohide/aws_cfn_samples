@@ -81,6 +81,12 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub ${ProjectName}-public-subnet1
+  SSMPublicSubnet1Id:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /${ProjectName}/PublicSubnet1Id
+      Type: String
+      Value: !Ref PublicSubnet1
   # 二つ目のPublic Subnetの作成
   PublicSubnet2:
     Type: AWS::EC2::Subnet
@@ -92,6 +98,12 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub ${ProjectName}-public-subnet1
+  SSMPublicSubnet2Id:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /${ProjectName}/PublicSubnet2Id
+      Type: String
+      Value: !Ref PublicSubnet2
   # 一つ目のPrivate Subnet1を作成
   PrivateSubnet1:
     Type: AWS::EC2::Subnet
@@ -102,6 +114,12 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub ${ProjectName}-private-subnet1
+  SSMPrivateSubnet1Id:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /${ProjectName}/PrivateSubnet1Id
+      Type: String
+      Value: !Ref PrivateSubnet1
   # 二つ目のPrivate Subnet2を作成
   PrivateSubnet2:
     Type: AWS::EC2::Subnet
@@ -112,6 +130,12 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub ${ProjectName}-private-subnet2
+  SSMPrivateSubnet2Id:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /${ProjectName}/PrivateSubnet2Id
+      Type: String
+      Value: !Ref PrivateSubnet2
 
   # Internet Gatewayを作成
   VPCIGW:
