@@ -6,6 +6,7 @@ Parameters:
     Type: String
   PublicSubnet1:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Subnet::Id>
+    Description: Enter AWS SSM Parameter Store Key
 
 Resources:
   Cloud9:
