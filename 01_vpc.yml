@@ -97,7 +97,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub ${ProjectName}-public-subnet1
+          Value: !Sub ${ProjectName}-public-subnet2
   SSMPublicSubnet2Id:
     Type: AWS::SSM::Parameter
     Properties:
