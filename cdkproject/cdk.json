@@ -55,6 +55,9 @@
     "@aws-cdk/aws-efs:denyAnonymousAccess": true,
     "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": true,
     "@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion": true,
-    "@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId": true
+    "@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId": true,
+
+    "systemName": "cdkproject",
+    "envType": "development"
   }
 }

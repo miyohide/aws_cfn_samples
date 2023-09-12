@@ -6,10 +6,14 @@ export class CdkprojectStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    // Contextから各種設定値を取得
+    const systemName = this.node.tryGetContext('systemName');
+    const envType = this.node.tryGetContext('envType');
+
     // VPCを作成する
     new CfnVPC(this, 'Vpc', {
       cidrBlock: '10.0.0.0/16',
-      tags: [{ key: 'Name', value: 'cdkproject-development-vpc'}]
+      tags: [{ key: 'Name', value: `${systemName}-${envType}-vpc`}]
     });
   }
 }

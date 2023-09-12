@@ -3,12 +3,18 @@ import { Template } from 'aws-cdk-lib/assertions';
 import * as Cdkproject from '../lib/cdkproject-stack';
 
 test('VPC Created', () => {
-  const app = new cdk.App();
+  // テストではcdk.jsonからはデータを読まないのでここで設定する
+  const app = new cdk.App({
+    context: {
+        'systemName': 'foo',
+        'envType': 'bar'
+    }
+  });
   const stack = new Cdkproject.CdkprojectStack(app, 'MyTestStack');
   const template = Template.fromStack(stack);
 
   template.hasResourceProperties('AWS::EC2::VPC', {
     CidrBlock: '10.0.0.0/16',
-    Tags: [{ 'Key': 'Name', 'Value': 'cdkproject-development-vpc'}]
+    Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-vpc'}]
   });
 });
