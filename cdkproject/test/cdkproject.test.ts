@@ -14,6 +14,7 @@ test('VPC Created', () => {
   const template = Template.fromStack(stack);
 
   // VPCが想定通り作られているか
+  template.resourceCountIs('AWS::EC2::VPC', 1);
   template.hasResourceProperties('AWS::EC2::VPC', {
     CidrBlock: '10.0.0.0/16',
     Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-vpc'}]
