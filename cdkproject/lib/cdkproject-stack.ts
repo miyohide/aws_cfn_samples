@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Vpc } from './resources/vpc';
 import { Subnet } from './resources/subnet';
+import { InternetGateway } from './resources/internetGateway';
 
 export class CdkprojectStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -13,5 +14,8 @@ export class CdkprojectStack extends cdk.Stack {
         // Subnetを作成する
         const subnet = new Subnet(vpc.vpc);
         subnet.createResources(this);
+        // Internet Gatewayを作成する
+        const internetGateway = new InternetGateway(vpc.vpc);
+        internetGateway.createResources(this);
     }
 }
