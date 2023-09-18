@@ -36,4 +36,7 @@ test('VPC Created', () => {
   template.hasResourceProperties('AWS::EC2::Subnet', {
     Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-subnet-db-1c'}]
   });
+  template.hasResourceProperties('AWS::EC2::InternetGateway', {
+    Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-igw'}]
+  });
 });
