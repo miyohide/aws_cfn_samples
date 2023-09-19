@@ -39,4 +39,10 @@ test('VPC Created', () => {
   template.hasResourceProperties('AWS::EC2::InternetGateway', {
     Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-igw'}]
   });
+  template.hasResourceProperties('AWS::EC2::EIP', {
+    Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-eip-ngw-1a'}]
+  });
+  template.hasResourceProperties('AWS::EC2::EIP', {
+    Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-eip-ngw-1c'}]
+  });
 });
