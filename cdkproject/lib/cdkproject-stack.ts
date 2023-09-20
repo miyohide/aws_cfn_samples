@@ -4,6 +4,7 @@ import { Vpc } from './resources/vpc';
 import { Subnet } from './resources/subnet';
 import { InternetGateway } from './resources/internetGateway';
 import { ElasticIp } from './resources/elasticIp';
+import { NatGateway } from './resources/natGateway';
 
 export class CdkprojectStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -21,5 +22,13 @@ export class CdkprojectStack extends cdk.Stack {
         // Elastic IPを作成する
         const elasticIp = new ElasticIp();
         elasticIp.createResources(this);
+        // Nat Gatewayを作成する
+        const natGateway = new NatGateway(
+            subnet.public1a,
+            subnet.public1c,
+            elasticIp.ngw1a,
+            elasticIp.ngw1c
+        );
+        natGateway.createResources(this);
     }
 }
