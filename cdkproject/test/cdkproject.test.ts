@@ -45,4 +45,10 @@ test('VPC Created', () => {
   template.hasResourceProperties('AWS::EC2::EIP', {
     Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-eip-ngw-1c'}]
   });
+  template.hasResourceProperties('AWS::EC2::NatGateway', {
+    Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-ngw-1a'}]
+  });
+  template.hasResourceProperties('AWS::EC2::NatGateway', {
+    Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-ngw-1c'}]
+  });
 });
