@@ -2,6 +2,7 @@ import { CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet, 
 import { Resource } from "./abstract/resource";
 import { Construct } from "constructs";
 
+// ルートのリソース情報を定義
 interface RouteInfo {
     readonly id: string;
     readonly destinationCidrBlock: string;
@@ -9,11 +10,13 @@ interface RouteInfo {
     readonly natGatewayId?: () => string;
 }
 
+// 関連付けのリソース情報を定義
 interface AssociationInfo {
     readonly id: string;
     readonly subnetId: () => string;
 }
 
+// ルートTableのリソース情報を定義
 interface ResourceInfo {
     readonly id: string;
     readonly resourceName: string;
@@ -40,6 +43,8 @@ export class RouteTable extends Resource {
     private readonly natGateway1c: CfnNatGateway;
     private readonly resources: ResourceInfo[] = [
         {
+            // パブリックサブネットに関連付けるルートテーブル。
+            // VPC内の通信以外はInternetGatewayをターゲットにする
             id: 'RouteTablePublic',
             resourceName: 'rtb-public',
             routes: [{
@@ -60,6 +65,8 @@ export class RouteTable extends Resource {
             assign: routeTable => this.public = routeTable
         },
         {
+            // アプリ層プライベートサブネット（ap-northeast-1a）に関連付けるルートテーブル
+            // ローカルルート以外は同一AZのNATゲートウェイをターゲットにする
             id: 'RouteTableApp1a',
             resourceName: 'rtb-app-1a',
             routes: [{
@@ -76,6 +83,8 @@ export class RouteTable extends Resource {
             assign: routeTable => this.app1a = routeTable
         },
         {
+            // アプリ層プライベートサブネット（ap-northeast-1c）に関連付けるルートテーブル
+            // ローカルルート以外は同一AZのNATゲートウェイをターゲットにする
             id: 'RouteTableApp1c',
             resourceName: 'rtb-app-1c',
             routes: [{
@@ -92,6 +101,8 @@ export class RouteTable extends Resource {
             assign: routeTable => this.app1c = routeTable
         },
         {
+            // データベース層のプライベートサブネットに関連付けるルートテーブル
+            // ローカルルート設定以外は指定しない
             id: 'RouteTableDb',
             resourceName: 'rtb-db',
             routes: [],
@@ -167,6 +178,7 @@ export class RouteTable extends Resource {
             destinationCidrBlock: routeInfo.destinationCidrBlock
         });
 
+        // ターゲットがインターネットゲートウェイもしくはNATゲートウェイの可能性があるため条件分岐
         if (routeInfo.gatewayId) {
             route.gatewayId = routeInfo.gatewayId();
         } else if (routeInfo.natGatewayId) {
