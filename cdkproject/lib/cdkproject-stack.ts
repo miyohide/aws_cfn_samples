@@ -5,6 +5,7 @@ import { Subnet } from './resources/subnet';
 import { InternetGateway } from './resources/internetGateway';
 import { ElasticIp } from './resources/elasticIp';
 import { NatGateway } from './resources/natGateway';
+import { RouteTable } from './resources/routeTable';
 
 export class CdkprojectStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -30,5 +31,19 @@ export class CdkprojectStack extends cdk.Stack {
             elasticIp.ngw1c
         );
         natGateway.createResources(this);
+        // Route Tableを作成する
+        const routeTable = new RouteTable(
+            vpc.vpc,
+            subnet.public1a,
+            subnet.public1c,
+            subnet.app1a,
+            subnet.app1c,
+            subnet.db1a,
+            subnet.db1c,
+            internetGateway.igw,
+            natGateway.ngw1a,
+            natGateway.ngw1c
+        );
+        routeTable.createResources(this);
     }
 }
