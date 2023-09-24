@@ -6,6 +6,7 @@ import { InternetGateway } from './resources/internetGateway';
 import { ElasticIp } from './resources/elasticIp';
 import { NatGateway } from './resources/natGateway';
 import { RouteTable } from './resources/routeTable';
+import { NetworkAcl } from './resources/networkAcl';
 
 export class CdkprojectStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -45,5 +46,16 @@ export class CdkprojectStack extends cdk.Stack {
             natGateway.ngw1c
         );
         routeTable.createResources(this);
+        // Network ACLを作成する
+        const networkAcl = new NetworkAcl(
+            vpc.vpc,
+            subnet.public1a,
+            subnet.public1c,
+            subnet.app1a,
+            subnet.app1c,
+            subnet.db1a,
+            subnet.db1c
+        );
+        networkAcl.createResources(this);
     }
 }
