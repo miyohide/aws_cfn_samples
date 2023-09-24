@@ -64,4 +64,14 @@ test('VPC Created', () => {
     template.hasResourceProperties('AWS::EC2::RouteTable', {
         Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-rtb-db' }]
     });
+    // Network ACLのタグのテスト
+    template.hasResourceProperties('AWS::EC2::NetworkAcl', {
+        Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-nacl-public' }]
+    });
+    template.hasResourceProperties('AWS::EC2::NetworkAcl', {
+        Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-nacl-app' }]
+    });
+    template.hasResourceProperties('AWS::EC2::NetworkAcl', {
+        Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-nacl-db' }]
+    });
 });
