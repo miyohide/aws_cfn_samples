@@ -51,4 +51,17 @@ test('VPC Created', () => {
     template.hasResourceProperties('AWS::EC2::NatGateway', {
         Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-ngw-1c' }]
     });
+    // RouteTableのタグのテスト
+    template.hasResourceProperties('AWS::EC2::RouteTable', {
+        Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-rtb-public' }]
+    });
+    template.hasResourceProperties('AWS::EC2::RouteTable', {
+        Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-rtb-app-1a' }]
+    });
+    template.hasResourceProperties('AWS::EC2::RouteTable', {
+        Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-rtb-app-1c' }]
+    });
+    template.hasResourceProperties('AWS::EC2::RouteTable', {
+        Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-rtb-db' }]
+    });
 });
