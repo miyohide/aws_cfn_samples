@@ -7,6 +7,7 @@ import { ElasticIp } from './resources/elasticIp';
 import { NatGateway } from './resources/natGateway';
 import { RouteTable } from './resources/routeTable';
 import { NetworkAcl } from './resources/networkAcl';
+import { IamRole } from './resources/iamRole';
 
 export class CdkprojectStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -57,5 +58,8 @@ export class CdkprojectStack extends cdk.Stack {
             subnet.db1c
         );
         networkAcl.createResources(this);
+        // IAM Roleを作る
+        const iamRole = new IamRole();
+        iamRole.createResources(this);
     }
 }
