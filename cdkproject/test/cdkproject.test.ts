@@ -74,4 +74,13 @@ test('VPC Created', () => {
     template.hasResourceProperties('AWS::EC2::NetworkAcl', {
         Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-nacl-db' }]
     });
+    template.hasResourceProperties('AWS::IAM::Role', {
+        RoleName: 'foo-bar-role-ec2'
+    });
+    template.hasResourceProperties('AWS::IAM::Role', {
+        RoleName: 'foo-bar-role-rds'
+    });
+    template.hasResourceProperties('AWS::IAM::InstanceProfile', {
+        InstanceProfileName: 'foo-bar-role-ec2'
+    });
 });
