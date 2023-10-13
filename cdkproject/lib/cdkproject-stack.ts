@@ -8,6 +8,7 @@ import { NatGateway } from './resources/natGateway';
 import { RouteTable } from './resources/routeTable';
 import { NetworkAcl } from './resources/networkAcl';
 import { IamRole } from './resources/iamRole';
+import { SecurityGroup } from './resources/securityGroup';
 
 export class CdkprojectStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -61,5 +62,8 @@ export class CdkprojectStack extends cdk.Stack {
         // IAM Roleを作る
         const iamRole = new IamRole();
         iamRole.createResources(this);
+        // Security Groupを作る
+        const securityGroup = new SecurityGroup(vpc.vpc);
+        securityGroup.createResources(this);
     }
 }
