@@ -83,4 +83,16 @@ test('VPC Created', () => {
     template.hasResourceProperties('AWS::IAM::InstanceProfile', {
         InstanceProfileName: 'foo-bar-role-ec2'
     });
+    template.hasResourceProperties('AWS::EC2::SecurityGroup', {
+        GroupName: 'foo-bar-sg-alb',
+        Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-sg-alb' }]
+    });
+    template.hasResourceProperties('AWS::EC2::SecurityGroup', {
+        GroupName: 'foo-bar-sg-ec2',
+        Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-sg-ec2' }]
+    });
+    template.hasResourceProperties('AWS::EC2::SecurityGroup', {
+        GroupName: 'foo-bar-sg-rds',
+        Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-sg-rds' }]
+    });
 });
