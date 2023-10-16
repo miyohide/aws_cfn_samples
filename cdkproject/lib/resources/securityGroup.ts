@@ -29,6 +29,7 @@ export class SecurityGroup extends Resource {
             groupDescription: "for ALB",
             ingresses: [
                 {
+                    // ALBに対するセキュリティグループ。ポート80（HTTP）
                     id: "SecurityGroupIngressAlb1",
                     securityGroupIngressProps: {
                         ipProtocol: "tcp",
@@ -39,6 +40,7 @@ export class SecurityGroup extends Resource {
                     groupId: () => this.alb.attrGroupId
                 },
                 {
+                    // ALBに対するセキュリティグループ。ポート443（HTTPS）
                     id: "SecurityGroupIngressAlb2",
                     securityGroupIngressProps: {
                         ipProtocol: "tcp",
@@ -53,6 +55,7 @@ export class SecurityGroup extends Resource {
             assign: securityGroup => this.alb = securityGroup
         },
         {
+            // EC2に対するセキュリティグループ。ALBからEC2のみ適用
             id: "SecurityGroupEc2",
             groupDescription: "for EC2",
             ingresses: [
@@ -71,6 +74,7 @@ export class SecurityGroup extends Resource {
             assign: securityGroup => this.ec2 = securityGroup
         },
         {
+            // RDSに対するセキュリティグループ。EC2からRDSにMySQLポートだけ有効
             id: "SecurityGroupRds",
             groupDescription: "for RDS",
             ingresses: [
@@ -104,6 +108,8 @@ export class SecurityGroup extends Resource {
         }
     };
 
+
+    // セキュリティグループを作成する。
     private createSecurityGroup(scope: Construct, resourceInfo: ResourceInfo) {
         const resourceName = this.createResourceName(scope, resourceInfo.resourceName);
         const securityGroup = new CfnSecurityGroup(scope, resourceInfo.id, {
@@ -119,6 +125,7 @@ export class SecurityGroup extends Resource {
         return securityGroup;
     };
 
+    // インバウンドルールの設定を行う
     private createSecurityGroupIngress(scope: Construct, resourceInfo: ResourceInfo) {
         for (const ingress of resourceInfo.ingresses) {
             const securityGroupIngress = new CfnSecurityGroupIngress(scope, ingress.id, ingress.securityGroupIngressProps);
