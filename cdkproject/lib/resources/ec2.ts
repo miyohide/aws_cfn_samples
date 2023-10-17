@@ -38,6 +38,19 @@ export class Ec2 extends Resource {
         }
     ];
 
+    constructor(
+        subnetApp1a: CfnSubnet,
+        subnetApp1c: CfnSubnet,
+        instanceProfileEc2: CfnInstanceProfile,
+        securityGroupEc2: CfnSecurityGroup
+    ) {
+        super();
+        this.subnetApp1a = subnetApp1a;
+        this.subnetApp1c = subnetApp1c;
+        this.instanceProfileEc2 = instanceProfileEc2;
+        this.securityGroupEc2 = securityGroupEc2;
+    }
+
     createResources(scope: Construct) {
         for (const resourceInfo of this.resources) {
             const instance = this.createInstance(scope, resourceInfo);
