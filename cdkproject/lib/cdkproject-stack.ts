@@ -9,6 +9,7 @@ import { RouteTable } from './resources/routeTable';
 import { NetworkAcl } from './resources/networkAcl';
 import { IamRole } from './resources/iamRole';
 import { SecurityGroup } from './resources/securityGroup';
+import {Ec2} from "./resources/ec2";
 
 export class CdkprojectStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -65,5 +66,13 @@ export class CdkprojectStack extends cdk.Stack {
         // Security Groupを作る
         const securityGroup = new SecurityGroup(vpc.vpc);
         securityGroup.createResources(this);
+        // EC2を作る
+        const ec2 = new Ec2(
+            subnet.app1a,
+            subnet.app1c,
+            iamRole.instanceProfileEc2,
+            securityGroup.ec2
+        );
+        ec2.createResources(this);
     }
 }
