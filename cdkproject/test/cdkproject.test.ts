@@ -95,4 +95,10 @@ test('VPC Created', () => {
         GroupName: 'foo-bar-sg-rds',
         Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-sg-rds' }]
     });
+    template.hasResourceProperties('AWS::EC2::Instance', {
+        Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-ec2-1a' }]
+    });
+    template.hasResourceProperties('AWS::EC2::Instance', {
+        Tags: [{ 'Key': 'Name', 'Value': 'foo-bar-ec2-1c' }]
+    });
 });
