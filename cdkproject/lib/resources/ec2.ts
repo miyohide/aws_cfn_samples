@@ -2,6 +2,7 @@ import {CfnInstance, CfnSecurityGroup, CfnSubnet} from "aws-cdk-lib/aws-ec2";
 import {Resource} from "./abstract/resource";
 import {CfnInstanceProfile} from "aws-cdk-lib/aws-iam";
 import {Construct} from "constructs";
+import * as fs from "fs";
 
 interface ResourceInfo {
     readonly id: string;
@@ -15,6 +16,7 @@ export class Ec2 extends Resource {
     public instance1a: CfnInstance;
     public instance1c: CfnInstance;
 
+    private static readonly userDataFilePath = `${__dirname}/../script/ec2/userData.sh`;
     private static readonly latestImageIdAmazonLinux2023 = 'xxxxx';
     private static readonly instanceType = 't2.micro';
     private readonly subnetApp1a: CfnSubnet;
@@ -69,7 +71,8 @@ export class Ec2 extends Resource {
             tags: [{
                 key: 'Name',
                 value: this.createResourceName(scope, resourceInfo.resourceName)
-            }]
+            }],
+            userData: fs.readFileSync(Ec2.userDataFilePath, 'base64')
         });
         return instance;
     }
