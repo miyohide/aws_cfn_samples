@@ -10,6 +10,7 @@ import { NetworkAcl } from './resources/networkAcl';
 import { IamRole } from './resources/iamRole';
 import { SecurityGroup } from './resources/securityGroup';
 import {Ec2} from "./resources/ec2";
+import { Alb } from './resources/alb';
 
 export class CdkprojectStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -74,5 +75,15 @@ export class CdkprojectStack extends cdk.Stack {
             securityGroup.ec2
         );
         ec2.createResources(this);
+        // ALBをつくる
+        const alb = new Alb(
+            vpc.vpc,
+            subnet.public1a,
+            subnet.public1c,
+            securityGroup.alb,
+            ec2.instance1a,
+            ec2.instance1c
+        );
+        alb.createResources(this);
     }
 }
