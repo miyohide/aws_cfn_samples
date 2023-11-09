@@ -16,4 +16,27 @@ test('ALB Created', () => {
         Subnets: Match.anyValue(),
         Type: 'application'
     });
+    template.resourceCountIs('AWS::ElasticLoadBalancingV2::TargetGroup', 1);
+    template.hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        Port: 80,
+        Protocol: 'HTTP',
+        TargetType: 'instance',
+        Targets: Match.anyValue(),
+        VpcId: Match.anyValue(),
+    });
+    template.resourceCountIs('AWS::ElasticLoadBalancingV2::Listener', 1);
+    template.hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+        DefaultActions: [{
+            Type: 'forward',
+            ForwardConfig: {
+                TargetGroups: [{
+                    TargetGroupArn: Match.anyValue(),
+                    Weight: 1
+                }]
+            }
+        }],
+        LoadBalancerArn: Match.anyValue(),
+        Port: 80,
+        Protocol: 'HTTP',
+    });
 });
