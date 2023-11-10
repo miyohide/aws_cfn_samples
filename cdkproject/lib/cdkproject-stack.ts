@@ -11,6 +11,7 @@ import { IamRole } from './resources/iamRole';
 import { SecurityGroup } from './resources/securityGroup';
 import {Ec2} from "./resources/ec2";
 import { Alb } from './resources/alb';
+import { SecretsManager } from './resources/secretsManager';
 
 export class CdkprojectStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -85,5 +86,8 @@ export class CdkprojectStack extends cdk.Stack {
             ec2.instance1c
         );
         alb.createResources(this);
+        // secrets managerを作る
+        const secretsManager = new SecretsManager();
+        secretsManager.createResources(this);
     }
 }
