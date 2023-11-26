@@ -16,6 +16,6 @@ Resources:
       ConnectionType: CONNECT_SSM
       Description: My Cloud9
       ImageId: amazonlinux-2-x86_64
-      InstanceType: t2.micro
+      InstanceType: t3.small
       Name: !Sub ${ProjectName}-Cloud9
       SubnetId: !Ref PublicSubnet1
