@@ -160,7 +160,7 @@ Resources:
       AutomaticStopTimeMinutes: 30
       ConnectionType: CONNECT_SSM
       Description: My Cloud9
-      ImageId: amazonlinux-2-x86_64
+      ImageId: amazonlinux-2023-x86_64
       InstanceType: t3.small
       Name: !Sub ${ProjectName}-Cloud9
       SubnetId: !Ref PublicSubnet1
