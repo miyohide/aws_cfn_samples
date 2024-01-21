@@ -164,9 +164,6 @@ Resources:
       InstanceType: t3.small
       Name: !Sub ${ProjectName}-Cloud9
       SubnetId: !Ref PublicSubnet1
-      Tags:
-        - Key: Name
-          Value: !Sub ${ProjectName}-Cloud9
 
 Outputs:
   VPCID:
