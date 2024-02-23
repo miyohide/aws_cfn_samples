@@ -1,16 +1,21 @@
 import * as cdk from 'aws-cdk-lib';
+import { SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class Ec2InstanceConnectStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    // VPCを作成する
+    const vpc = new Vpc(this, 'VPC', {
+      maxAzs: 1,
+      subnetConfiguration: [
+        {
+          name: 'private',
+          subnetType: SubnetType.PRIVATE_ISOLATED,
+        },
+      ],
+    });
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'Ec2InstanceConnectQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
   }
 }
