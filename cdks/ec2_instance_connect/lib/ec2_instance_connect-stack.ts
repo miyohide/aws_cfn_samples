@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { Instance, InstanceClass, InstanceSize, InstanceType, MachineImage, Port, SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { CfnInstanceConnectEndpoint, Instance, InstanceClass, InstanceSize, InstanceType, MachineImage, Port, SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 
 export class Ec2InstanceConnectStack extends cdk.Stack {
@@ -34,6 +34,12 @@ export class Ec2InstanceConnectStack extends cdk.Stack {
       instanceType: InstanceType.of(InstanceClass.T2, InstanceSize.MICRO),
       machineImage: MachineImage.latestAmazonLinux2023(),
       securityGroup: securityGroupForEC2,
+    });
+
+    // EC2 Instance Connectを作成する
+    new CfnInstanceConnectEndpoint(this, 'InstanceConnect', {
+      subnetId: vpc.selectSubnets({ subnetType: SubnetType.PRIVATE_ISOLATED }).subnetIds[0],
+      securityGroupIds: [securityGroupForEIC.securityGroupId],
     });
   }
 }
