@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { Port, SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { Instance, InstanceClass, InstanceSize, InstanceType, MachineImage, Port, SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 
 export class Ec2InstanceConnectStack extends cdk.Stack {
@@ -27,5 +27,13 @@ export class Ec2InstanceConnectStack extends cdk.Stack {
     });
     securityGroupForEC2.addIngressRule(securityGroupForEIC, Port.tcp(22));
     securityGroupForEIC.addIngressRule(securityGroupForEC2, Port.tcp(22));
+
+    // EC2インスタンスを作成する
+    new Instance(this, 'EC2', {
+      vpc,
+      instanceType: InstanceType.of(InstanceClass.T2, InstanceSize.MICRO),
+      machineImage: MachineImage.latestAmazonLinux2023(),
+      securityGroup: securityGroupForEC2,
+    });
   }
 }
