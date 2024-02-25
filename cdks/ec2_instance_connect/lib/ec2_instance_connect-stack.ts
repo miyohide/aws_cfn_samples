@@ -29,10 +29,12 @@ export class Ec2InstanceConnectStack extends Stack {
     // SecurityGroupを作成する
     const securityGroupForEC2 = new SecurityGroup(this, 'SecurityGroupForEC2', {
       vpc,
+      securityGroupName: 'ForEC2',
     });
     const securityGroupForEIC = new SecurityGroup(this, 'SecurityGroupForEIC', {
       vpc,
       allowAllOutbound: false, // 指定のEC2のみに通信を許可するためfalseを指定
+      securityGroupName: 'ForEIC',
     });
     securityGroupForEC2.addIngressRule(securityGroupForEIC, Port.tcp(22));
     securityGroupForEIC.addEgressRule(securityGroupForEC2, Port.tcp(22));
