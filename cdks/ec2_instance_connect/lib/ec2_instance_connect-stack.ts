@@ -26,7 +26,7 @@ export class Ec2InstanceConnectStack extends cdk.Stack {
       allowAllOutbound: false, // 指定のEC2のみに通信を許可するためfalseを指定
     });
     securityGroupForEC2.addIngressRule(securityGroupForEIC, Port.tcp(22));
-    securityGroupForEIC.addIngressRule(securityGroupForEC2, Port.tcp(22));
+    securityGroupForEIC.addEgressRule(securityGroupForEC2, Port.tcp(22));
 
     // EC2インスタンスを作成する
     new Instance(this, 'EC2', {
