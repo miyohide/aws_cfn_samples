@@ -8,8 +8,17 @@ export class Ec2InstanceConnectStack extends Stack {
 
     // VPCを作成する
     const vpc = new Vpc(this, 'VPC', {
+      vpcName: 'EC2InstanceConnectVPC',
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
       maxAzs: 1,
+      natGateways: 1,
       subnetConfiguration: [
+        {
+          name: 'public',
+          subnetType: SubnetType.PUBLIC,
+          mapPublicIpOnLaunch: true, // EC2のIPアドレスを公開するためtrueを指定する
+        },
         {
           name: 'private',
           subnetType: SubnetType.PRIVATE_ISOLATED,
