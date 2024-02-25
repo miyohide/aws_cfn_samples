@@ -42,6 +42,7 @@ export class Ec2InstanceConnectStack extends Stack {
     // EC2インスタンスを作成する
     new Instance(this, 'EC2', {
       vpc,
+      instanceName: 'DBmaintenance',
       instanceType: InstanceType.of(InstanceClass.T2, InstanceSize.MICRO),
       machineImage: MachineImage.latestAmazonLinux2023(),
       securityGroup: securityGroupForEC2,
