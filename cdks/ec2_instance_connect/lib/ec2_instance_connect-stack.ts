@@ -1,6 +1,7 @@
 import { Stack, StackProps } from 'aws-cdk-lib';
 import { CfnInstanceConnectEndpoint, Instance, InstanceClass, InstanceSize, InstanceType, MachineImage, Port, SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
+import { readFileSync } from 'fs';
 
 export class Ec2InstanceConnectStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -40,13 +41,17 @@ export class Ec2InstanceConnectStack extends Stack {
     securityGroupForEIC.addEgressRule(securityGroupForEC2, Port.tcp(22));
 
     // EC2インスタンスを作成する
-    new Instance(this, 'EC2', {
+    const ec2Instance = new Instance(this, 'EC2', {
       vpc,
       instanceName: 'DBmaintenance',
       instanceType: InstanceType.of(InstanceClass.T2, InstanceSize.MICRO),
       machineImage: MachineImage.latestAmazonLinux2023(),
       securityGroup: securityGroupForEC2,
     });
+
+    // EC2インスタンスに初期セットアップを実行する
+    const script = readFileSync('./lib/resources/user-data.sh', 'utf-8');
+    ec2Instance.addUserData(script);
 
     // EC2 Instance Connectを作成する
     new CfnInstanceConnectEndpoint(this, 'InstanceConnect', {
