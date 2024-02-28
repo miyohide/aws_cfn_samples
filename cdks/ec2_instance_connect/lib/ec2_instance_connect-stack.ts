@@ -24,6 +24,10 @@ export class Ec2InstanceConnectStack extends Stack {
           name: 'private',
           subnetType: SubnetType.PRIVATE_ISOLATED,
         },
+        {
+          name: 'db',
+          subnetType: SubnetType.PRIVATE_ISOLATED,
+        }
       ],
     });
 
