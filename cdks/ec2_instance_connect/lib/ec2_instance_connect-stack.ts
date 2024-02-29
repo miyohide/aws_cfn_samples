@@ -12,7 +12,7 @@ export class Ec2InstanceConnectStack extends Stack {
       vpcName: 'EC2InstanceConnectVPC',
       enableDnsHostnames: true,
       enableDnsSupport: true,
-      maxAzs: 1,
+      maxAzs: 2,
       natGateways: 1,
       subnetConfiguration: [
         {
