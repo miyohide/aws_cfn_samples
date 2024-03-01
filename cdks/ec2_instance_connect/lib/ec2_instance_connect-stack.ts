@@ -41,6 +41,10 @@ export class Ec2InstanceConnectStack extends Stack {
       allowAllOutbound: false, // 指定のEC2のみに通信を許可するためfalseを指定
       securityGroupName: 'ForEIC',
     });
+    const securityGroupForRDB = new SecurityGroup(this, 'SecurityGroupForRDB', {
+      vpc: vpc,
+      securityGroupName: 'ForRDB',
+    });
     securityGroupForEC2.addIngressRule(securityGroupForEIC, Port.tcp(22));
     securityGroupForEIC.addEgressRule(securityGroupForEC2, Port.tcp(22));
 
