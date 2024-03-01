@@ -47,6 +47,7 @@ export class Ec2InstanceConnectStack extends Stack {
     });
     securityGroupForEC2.addIngressRule(securityGroupForEIC, Port.tcp(22));
     securityGroupForEIC.addEgressRule(securityGroupForEC2, Port.tcp(22));
+    securityGroupForRDB.addIngressRule(securityGroupForEC2, Port.tcp(5432));
 
     // EC2インスタンスを作成する
     const ec2Instance = new Instance(this, 'EC2', {
