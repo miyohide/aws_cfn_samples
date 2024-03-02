@@ -1,5 +1,6 @@
-import { Stack, StackProps } from 'aws-cdk-lib';
+import { RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { CfnInstanceConnectEndpoint, Instance, InstanceClass, InstanceSize, InstanceType, MachineImage, Port, SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { Credentials, DatabaseInstance, DatabaseInstanceEngine, SubnetGroup } from 'aws-cdk-lib/aws-rds';
 import { Construct } from 'constructs';
 import { readFileSync } from 'fs';
 
@@ -67,5 +68,14 @@ export class Ec2InstanceConnectStack extends Stack {
       subnetId: vpc.selectSubnets({ subnetType: SubnetType.PRIVATE_ISOLATED }).subnetIds[0],
       securityGroupIds: [securityGroupForEIC.securityGroupId],
     });
+
+    // RDS用サブネットグループの作成
+    const rdsSubnetGroup = new SubnetGroup(this, 'RdsSubnetGroup', {
+      vpc: vpc,
+      description: 'RDS Subnet Group',
+      vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
+      subnetGroupName: 'RdsSubnetGroup',
+    });
+
   }
 }
