@@ -77,5 +77,20 @@ export class Ec2InstanceConnectStack extends Stack {
       subnetGroupName: 'RdsSubnetGroup',
     });
 
+    const rdsPassword = this.node.tryGetContext('rdsPassword');
+    const rdsCredentials = Credentials.fromPassword('postgres', rdsPassword);
+
+    // RDSインスタンスの作成と設定を行う。今回はPostgreSQLを使用する
+    const rdsInstance = new DatabaseInstance(this, 'RDS', {
+      vpc: vpc,
+      databaseName: 'mypgname',
+      credentials: rdsCredentials,
+      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.MICRO),
+      engine: DatabaseInstanceEngine.POSTGRES,
+      multiAz: false,
+      subnetGroup: rdsSubnetGroup,
+      securityGroups: [securityGroupForRDB],
+      removalPolicy: RemovalPolicy.DESTROY
+    });
   }
 }
