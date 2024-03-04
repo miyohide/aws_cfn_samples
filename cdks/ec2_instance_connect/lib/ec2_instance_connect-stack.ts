@@ -77,6 +77,7 @@ export class Ec2InstanceConnectStack extends Stack {
       subnetGroupName: 'RdsSubnetGroup',
     });
 
+    // TODO パスワードの設定が誤っている感じなので修正する
     const rdsPassword = this.node.tryGetContext('rdsPassword');
     const rdsCredentials = Credentials.fromPassword('postgres', rdsPassword);
 
