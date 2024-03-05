@@ -1,6 +1,7 @@
-import { RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import { RemovalPolicy, SecretValue, Stack, StackProps } from 'aws-cdk-lib';
 import { CfnInstanceConnectEndpoint, Instance, InstanceClass, InstanceSize, InstanceType, MachineImage, Port, SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Credentials, DatabaseInstance, DatabaseInstanceEngine, SubnetGroup } from 'aws-cdk-lib/aws-rds';
+import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 import { readFileSync } from 'fs';
 
@@ -78,7 +79,7 @@ export class Ec2InstanceConnectStack extends Stack {
     });
 
     // TODO パスワードの設定が誤っている感じなので修正する
-    const rdsPassword = this.node.tryGetContext('rdsPassword');
+    const rdsPassword = SecretValue.ssmSecure('/RDS/password');
     const rdsCredentials = Credentials.fromPassword('postgres', rdsPassword);
 
     // RDSインスタンスの作成と設定を行う。今回はPostgreSQLを使用する
