@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { CfnInstanceConnectEndpoint, Port, SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { CfnInstanceConnectEndpoint, GatewayVpcEndpointAwsService, Port, SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 
 export class MyrdstestStack extends cdk.Stack {
@@ -51,6 +51,12 @@ export class MyrdstestStack extends cdk.Stack {
     new CfnInstanceConnectEndpoint(this, 'InstanceConnectEndpoint', {
       subnetId: vpc.selectSubnets({ subnetType: SubnetType.PRIVATE_WITH_EGRESS }).subnetIds[0],
       securityGroupIds: [eicSg.securityGroupId]
+    });
+
+    // GatewayタイプのVPCエンドポイントを作成する
+    vpc.addGatewayEndpoint('s3Endpoint', {
+      service: GatewayVpcEndpointAwsService.S3,
+      subnets: [{ subnetType: SubnetType.PRIVATE_WITH_EGRESS }]
     });
   }
 }
