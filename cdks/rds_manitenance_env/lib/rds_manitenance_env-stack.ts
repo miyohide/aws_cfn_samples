@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { CfnInstanceConnectEndpoint, GatewayVpcEndpointAwsService, Port, SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { CfnInstanceConnectEndpoint, GatewayVpcEndpointAwsService, Port, SecurityGroup, SubnetType, UserData, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 
 export class MyrdstestStack extends cdk.Stack {
@@ -11,15 +11,9 @@ export class MyrdstestStack extends cdk.Stack {
     const vpc = new Vpc(this, 'VPC', {
       cidr: '10.0.0.0/16',
       vpcName: 'MyRDSTestVPC',
-      natGateways: 1,
+      natGateways: 0,
       maxAzs: 2,
       subnetConfiguration: [
-        {
-          // natGateway用のpublic subnet
-          cidrMask: 24,
-          name: 'public',
-          subnetType: SubnetType.PUBLIC
-        },
         {
           // EC2用のprivate subnet
           cidrMask: 24,
@@ -58,5 +52,12 @@ export class MyrdstestStack extends cdk.Stack {
       service: GatewayVpcEndpointAwsService.S3,
       subnets: [{ subnetType: SubnetType.PRIVATE_WITH_EGRESS }]
     });
+
+    const userData = UserData.forLinux({
+      shebang: '#!/bin/bash',
+    });
+    userData.addCommands(
+      'dnf install mariadb105'
+    );
   }
 }
