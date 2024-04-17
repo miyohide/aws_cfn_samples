@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { CfnInstanceConnectEndpoint, GatewayVpcEndpointAwsService, Port, SecurityGroup, SubnetType, UserData, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { AmazonLinux2023Kernel, AmazonLinuxGeneration, AmazonLinuxImage, CfnInstanceConnectEndpoint, GatewayVpcEndpointAwsService, Instance, InstanceClass, InstanceSize, InstanceType, MachineImage, Port, SecurityGroup, SubnetType, UserData, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 
 export class MyrdstestStack extends cdk.Stack {
@@ -59,5 +59,17 @@ export class MyrdstestStack extends cdk.Stack {
     userData.addCommands(
       'dnf install mariadb105'
     );
+
+    // EC2インスタンスを作成する
+    new Instance(this, 'EC2Instance', {
+      vpc: vpc,
+      vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+      securityGroup: ec2Sg,
+      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.MICRO),
+      machineImage: new AmazonLinuxImage({
+        generation: AmazonLinuxGeneration.AMAZON_LINUX_2023,
+      }),
+      userData: userData
+    });
   }
 }
