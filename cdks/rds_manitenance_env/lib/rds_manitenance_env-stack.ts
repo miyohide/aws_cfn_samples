@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { AmazonLinuxGeneration, AmazonLinuxImage, CfnInstanceConnectEndpoint, GatewayVpcEndpointAwsService, Instance, InstanceClass, InstanceSize, InstanceType, Port, SecurityGroup, SubnetType, UserData, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 
 export class MyrdstestStack extends cdk.Stack {
@@ -52,6 +53,17 @@ export class MyrdstestStack extends cdk.Stack {
       service: GatewayVpcEndpointAwsService.S3,
       subnets: [{ subnetType: SubnetType.PRIVATE_WITH_EGRESS }]
     });
+
+    // IAMロールを作成
+    const role = new Role(this, 'Role', {
+      assumedBy: new ServicePrincipal("ec2.amazonaws.com"),
+    });
+
+    // RDSへのIAM認証に必要なポリシーをアタッチ
+    role.addToPolicy(new PolicyStatement({
+      actions: ["tds-db:connect"],
+      resources: ["*"]
+    }));
 
     const userData = UserData.forLinux({
       shebang: '#!/bin/bash',
