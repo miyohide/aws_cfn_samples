@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { AmazonLinuxGeneration, AmazonLinuxImage, CfnInstanceConnectEndpoint, GatewayVpcEndpointAwsService, Instance, InstanceClass, InstanceSize, InstanceType, Port, SecurityGroup, SubnetType, UserData, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { DatabaseInstance, DatabaseInstanceEngine, SubnetGroup } from 'aws-cdk-lib/aws-rds';
 import { Construct } from 'constructs';
 
 export class MyrdstestStack extends cdk.Stack {
@@ -85,6 +86,34 @@ export class MyrdstestStack extends cdk.Stack {
       }),
       userData: userData,
       role: role,
+    });
+
+    // RDS用のセキュリティグループを作成する
+    const rdsSg = new SecurityGroup(this, 'rdsSg', {
+      vpc: vpc,
+      allowAllOutbound: true
+    });
+
+    // RDS サブネットグループを作成する
+    const dbSubnetGroup = new SubnetGroup(this, 'dbSubnetGroup', {
+      vpc: vpc,
+      subnetGroupName: 'MyRDSTestDBSubnetGroup',
+      vpcSubnets: {
+        subnetType: SubnetType.PRIVATE_ISOLATED,
+        onePerAz: true,
+      },
+      description: 'My RDS TestDB SubnetGroup'
+    });
+
+    // RDSインスタンスを作成する
+    const rdsInstance = new DatabaseInstance(this, 'RDSInstance', {
+      vpc: vpc,
+      engine: DatabaseInstanceEngine.POSTGRES,
+      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.MICRO),
+      databaseName: 'mypgdb',
+      multiAz: false,
+      subnetGroup: dbSubnetGroup,
+      securityGroups: [rdsSg],
     });
   }
 }
