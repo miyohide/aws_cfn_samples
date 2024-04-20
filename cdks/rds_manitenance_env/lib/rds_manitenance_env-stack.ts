@@ -56,6 +56,7 @@ export class MyrdstestStack extends cdk.Stack {
 
     // IAMロールを作成
     const role = new Role(this, 'Role', {
+      roleName: 'EC2RoleForRDSIAMAuth',
       assumedBy: new ServicePrincipal("ec2.amazonaws.com"),
     });
 
