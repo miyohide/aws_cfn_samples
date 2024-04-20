@@ -63,7 +63,8 @@ export class MyrdstestStack extends cdk.Stack {
 
     // RDSへのIAM認証に必要なポリシーをアタッチ
     role.addToPolicy(new PolicyStatement({
-      actions: ["tds-db:connect"],
+      effect: Effect.ALLOW,
+      actions: ["rds-db:connect"],
       resources: ["*"]
     }));
 
