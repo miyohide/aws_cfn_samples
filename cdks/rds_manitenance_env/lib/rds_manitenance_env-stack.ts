@@ -82,7 +82,8 @@ export class MyrdstestStack extends cdk.Stack {
       machineImage: new AmazonLinuxImage({
         generation: AmazonLinuxGeneration.AMAZON_LINUX_2023,
       }),
-      userData: userData
+      userData: userData,
+      role: role,
     });
   }
 }
