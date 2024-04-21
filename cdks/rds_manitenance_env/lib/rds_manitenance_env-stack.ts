@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { AmazonLinuxGeneration, AmazonLinuxImage, CfnInstanceConnectEndpoint, GatewayVpcEndpointAwsService, Instance, InstanceClass, InstanceSize, InstanceType, Port, SecurityGroup, SubnetType, UserData, Vpc } from 'aws-cdk-lib/aws-ec2';
-import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { DatabaseInstance, DatabaseInstanceEngine, SubnetGroup } from 'aws-cdk-lib/aws-rds';
 import { Construct } from 'constructs';
 
@@ -77,7 +77,7 @@ export class MyrdstestStack extends cdk.Stack {
     );
 
     // EC2インスタンスを作成する
-    new Instance(this, 'EC2Instance', {
+    const ec2Instance = new Instance(this, 'EC2Instance', {
       vpc: vpc,
       vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
       securityGroup: ec2Sg,
@@ -116,5 +116,7 @@ export class MyrdstestStack extends cdk.Stack {
       subnetGroup: dbSubnetGroup,
       securityGroups: [rdsSg],
     });
+
+    rdsInstance.connections.allowDefaultPortFrom(ec2Instance, "allow connect from ec2");
   }
 }
