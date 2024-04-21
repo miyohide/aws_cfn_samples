@@ -72,8 +72,8 @@ export class MyrdstestStack extends cdk.Stack {
       shebang: '#!/bin/bash',
     });
     userData.addCommands(
-      'dnf install mariadb105',
-      'dnf install postgresql15'
+      'dnf install -y mariadb105',
+      'dnf install -y postgresql15'
     );
 
     // EC2インスタンスを作成する
