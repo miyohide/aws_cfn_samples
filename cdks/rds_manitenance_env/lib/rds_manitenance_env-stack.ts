@@ -78,6 +78,7 @@ export class RdsManitenanceEnvStack extends cdk.Stack {
 
     // EC2インスタンスを作成する
     const ec2Instance = new Instance(this, 'EC2Instance', {
+      instanceName: 'DBMaintenance',
       vpc: vpc,
       vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
       securityGroup: ec2Sg,
