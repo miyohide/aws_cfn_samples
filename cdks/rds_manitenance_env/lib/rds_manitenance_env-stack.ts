@@ -109,6 +109,7 @@ export class RdsMaintenanceEnvStack extends cdk.Stack {
 
     // RDSインスタンスを作成する
     const rdsInstance = new DatabaseInstance(this, 'RDSInstance', {
+      instanceIdentifier: 'MyRDSTestPostgresDB',
       vpc: vpc,
       engine: DatabaseInstanceEngine.POSTGRES,
       instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.MICRO),
