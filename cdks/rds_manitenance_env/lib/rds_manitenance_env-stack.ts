@@ -107,11 +107,23 @@ export class RdsMaintenanceEnvStack extends cdk.Stack {
       description: 'My RDS TestDB SubnetGroup'
     });
 
-    // RDSインスタンスを作成する
+    // RDSインスタンスを作成する（PostgreSQL）
+    // const rdsInstance = new DatabaseInstance(this, 'RDSInstance', {
+    //   instanceIdentifier: 'MyRDSTestPostgresDB',
+    //   vpc: vpc,
+    //   engine: DatabaseInstanceEngine.POSTGRES,
+    //   instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.MICRO),
+    //   databaseName: 'mypgdb',
+    //   multiAz: false,
+    //   subnetGroup: dbSubnetGroup,
+    //   securityGroups: [rdsSg],
+    // });
+
+    // RDSインスタンスを作成する（MySQL）
     const rdsInstance = new DatabaseInstance(this, 'RDSInstance', {
-      instanceIdentifier: 'MyRDSTestPostgresDB',
+      instanceIdentifier: 'MyRDSTestMySQLDB',
       vpc: vpc,
-      engine: DatabaseInstanceEngine.POSTGRES,
+      engine: DatabaseInstanceEngine.MYSQL,
       instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.MICRO),
       databaseName: 'mypgdb',
       multiAz: false,
