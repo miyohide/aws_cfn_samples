@@ -1,4 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
+import { RemovalPolicy } from 'aws-cdk-lib';
 import { AmazonLinuxGeneration, AmazonLinuxImage, CfnInstanceConnectEndpoint, GatewayVpcEndpointAwsService, Instance, InstanceClass, InstanceSize, InstanceType, Port, SecurityGroup, SubnetType, UserData, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { DatabaseInstance, DatabaseInstanceEngine, SubnetGroup } from 'aws-cdk-lib/aws-rds';
@@ -129,6 +130,7 @@ export class RdsMaintenanceEnvStack extends cdk.Stack {
       multiAz: false,
       subnetGroup: dbSubnetGroup,
       securityGroups: [rdsSg],
+      removalPolicy: RemovalPolicy.DESTROY,
     });
 
     rdsInstance.connections.allowDefaultPortFrom(ec2Instance, "allow connect from ec2");
