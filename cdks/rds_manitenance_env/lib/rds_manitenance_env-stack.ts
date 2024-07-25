@@ -118,6 +118,7 @@ export class RdsMaintenanceEnvStack extends cdk.Stack {
     //   multiAz: false,
     //   subnetGroup: dbSubnetGroup,
     //   securityGroups: [rdsSg],
+    //   removalPolicy: RemovalPolicy.DESTROY,
     // });
 
     // RDSインスタンスを作成する（MySQL）
