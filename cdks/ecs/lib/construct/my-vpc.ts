@@ -1,4 +1,4 @@
-import { GatewayVpcEndpointAwsService, InterfaceVpcEndpointAwsService, IpAddresses, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2/lib";
+import { GatewayVpcEndpointAwsService, InterfaceVpcEndpointAwsService, IpAddresses, SelectedSubnets, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2/lib";
 import { Construct } from "constructs";
 
 export class MyVpc extends Construct {
@@ -56,5 +56,32 @@ export class MyVpc extends Construct {
                 },
             ],
         });
+    }
+
+    /**
+     * getPublicSubnets
+     *
+     * パブリックサブネットを返す
+     */
+    public getPublicSubnets(): SelectedSubnets {
+        return this.value.selectSubnets({ subnetType: SubnetType.PUBLIC });
+    }
+
+    /**
+     * getEcsSubnets
+     *
+     * ECS用のサブネットを返す
+     */
+    public getEcsSubnets(): SelectedSubnets {
+        return this.value.selectSubnets({ subnetGroupName: this.ecsSubnetName });
+    }
+
+    /**
+     * getRdsSubnets
+     *
+     * RDS用のサブネットを返す
+     */
+    public getRdsSubnets(): SelectedSubnets {
+        return this.value.selectSubnets({ subnetGroupName: this.rdsSubnetName });
     }
 }
