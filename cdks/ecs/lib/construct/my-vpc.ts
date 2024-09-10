@@ -1,4 +1,4 @@
-import { IpAddresses, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2/lib";
+import { GatewayVpcEndpointAwsService, InterfaceVpcEndpointAwsService, IpAddresses, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2/lib";
 import { Construct } from "constructs";
 
 export class MyVpc extends Construct {
@@ -36,6 +36,25 @@ export class MyVpc extends Construct {
                 },
             ],
             natGateways: 0,
+        });
+
+        // VPCエンドポイントを作成
+        this.value.addInterfaceEndpoint("EcrEndpoint", {
+            service: InterfaceVpcEndpointAwsService.ECR,
+        });
+        this.value.addInterfaceEndpoint("EcrDkrEndpoint", {
+            service: InterfaceVpcEndpointAwsService.ECR_DOCKER,
+        });
+        this.value.addInterfaceEndpoint("CwLogsEndpoint", {
+            service: InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS,
+        });
+        this.value.addGatewayEndpoint("S3Endpoint", {
+            service: GatewayVpcEndpointAwsService.S3,
+            subnets: [
+                {
+                    subnets: this.value.isolatedSubnets,
+                },
+            ],
         });
     }
 }
