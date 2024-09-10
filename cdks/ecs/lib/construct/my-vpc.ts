@@ -1,0 +1,41 @@
+import { IpAddresses, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2/lib";
+import { Construct } from "constructs";
+
+export class MyVpc extends Construct {
+    public readonly value: Vpc;
+    private readonly ecsSubnetName: string;
+    private readonly rdsSubnetName: string;
+
+    constructor(scope: Construct, id: string, private readonly resourceName: string) {
+        super(scope, id);
+        this.ecsSubnetName = `${this.resourceName}-ecs`;
+        this.rdsSubnetName = `${this.resourceName}-rds`;
+
+        // ALBを配置するpublicサブネットと
+        // ECSを配置するprivateサブネットと
+        // RDSを配置するprivateサブネットを作成する
+        this.value = new Vpc(this, "Vpc", {
+            vpcName: `${this.resourceName}-vpc`,
+            availabilityZones: ["ap-northeast-1a", "ap-northeast-1c"],
+            ipAddresses: IpAddresses.cidr("192.168.0.0/16"),
+            subnetConfiguration: [
+                {
+                    name: `${this.resourceName}-public`,
+                    cidrMask: 26,
+                    subnetType: SubnetType.PUBLIC,
+                },
+                {
+                    name: this.ecsSubnetName,
+                    cidrMask: 26,
+                    subnetType: SubnetType.PRIVATE_ISOLATED,
+                },
+                {
+                    name: this.rdsSubnetName,
+                    cidrMask: 26,
+                    subnetType: SubnetType.PRIVATE_ISOLATED,
+                },
+            ],
+            natGateways: 0,
+        });
+    }
+}
