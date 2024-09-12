@@ -8,11 +8,11 @@ export class EcsStack extends cdk.Stack {
     super(scope, id, props);
 
     // ECRを作成する
-    const ecr = Repository.fromRepositoryName(
-      this,
-      "EcrRepository",
-      resourceName,
-    );
+    const ecr = new Repository(this, "EcrRepository", {
+      repositoryName: `${resourceName}-ecr`,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      emptyOnDelete: true,
+    });
 
     // VPCを作成する
     const myVpc = new MyVpc(this, "VPC", resourceName);
