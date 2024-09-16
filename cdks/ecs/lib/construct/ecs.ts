@@ -1,11 +1,13 @@
 import { Vpc } from "aws-cdk-lib/aws-ec2";
-import { AwsLogDriver, Cluster, CpuArchitecture, FargateTaskDefinition } from "aws-cdk-lib/aws-ecs";
+import { IRepository } from "aws-cdk-lib/aws-ecr";
+import { AwsLogDriver, Cluster, ContainerImage, CpuArchitecture, FargateTaskDefinition } from "aws-cdk-lib/aws-ecs";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Construct } from "constructs";
 
 interface EcsProps {
     vpc: Vpc;
     resourceName: string;
+    ecrRepository: IRepository;
 }
 
 export class Ecs extends Construct {
@@ -30,6 +32,14 @@ export class Ecs extends Construct {
         const logDriver = new AwsLogDriver({
             streamPrefix: "ecs",
             logRetention: RetentionDays.ONE_DAY,
+        });
+        // コンテナ定義を追加
+        taskDef.addContainer("EcsContainer", {
+            image: ContainerImage.fromEcrRepository(props.ecrRepository, "latest"),
+            portMappings: [{
+                containerPort: 3000
+            }],
+            logging: logDriver,
         });
     }
 }
