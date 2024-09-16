@@ -1,5 +1,6 @@
 import { Vpc } from "aws-cdk-lib/aws-ec2";
-import { Cluster, CpuArchitecture, FargateTaskDefinition } from "aws-cdk-lib/aws-ecs";
+import { AwsLogDriver, Cluster, CpuArchitecture, FargateTaskDefinition } from "aws-cdk-lib/aws-ecs";
+import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Construct } from "constructs";
 
 interface EcsProps {
@@ -24,6 +25,11 @@ export class Ecs extends Construct {
             runtimePlatform: {
                 cpuArchitecture: CpuArchitecture.X86_64,
             },
+        });
+        // ログドライバーを作成
+        const logDriver = new AwsLogDriver({
+            streamPrefix: "ecs",
+            logRetention: RetentionDays.ONE_DAY,
         });
     }
 }
