@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import { MyVpc } from './construct/my-vpc';
 import { MySecurityGroup } from './construct/my-security-group';
 import { Alb } from './construct/alb';
+import { Rds } from './construct/rds';
 
 export class EcsStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps, readonly resourceName = "sample-ecr-app") {
@@ -31,6 +32,14 @@ export class EcsStack extends cdk.Stack {
       resourceName,
       securityGroup: albSecurityGroup,
       subnets: myVpc.getPublicSubnets(),
+    });
+
+    // RDSを作成する
+    new Rds(this, "Rds", {
+      resourceName,
+      vpc: myVpc.value,
+      securityGroup: rdsSecurityGroup,
+      subnets: myVpc.getRdsSubnets(),
     });
   }
 }
