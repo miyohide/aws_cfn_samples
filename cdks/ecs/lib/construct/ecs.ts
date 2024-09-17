@@ -1,6 +1,6 @@
-import { Vpc } from "aws-cdk-lib/aws-ec2";
+import { SecurityGroup, SubnetSelection, Vpc } from "aws-cdk-lib/aws-ec2";
 import { IRepository } from "aws-cdk-lib/aws-ecr";
-import { AwsLogDriver, Cluster, ContainerImage, CpuArchitecture, FargateTaskDefinition } from "aws-cdk-lib/aws-ecs";
+import { AwsLogDriver, Cluster, ContainerImage, CpuArchitecture, FargateService, FargateTaskDefinition, TaskDefinitionRevision } from "aws-cdk-lib/aws-ecs";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Construct } from "constructs";
 
@@ -8,6 +8,8 @@ interface EcsProps {
     vpc: Vpc;
     resourceName: string;
     ecrRepository: IRepository;
+    securityGroup: SecurityGroup;
+    subnets: SubnetSelection;
 }
 
 export class Ecs extends Construct {
@@ -40,6 +42,14 @@ export class Ecs extends Construct {
                 containerPort: 3000
             }],
             logging: logDriver,
+        });
+        // Fargate
+        new FargateService(this, "EcsFargateService", {
+            cluster,
+            taskDefinition: taskDef,
+            desiredCount: 2,
+            securityGroups: [props.securityGroup],
+            taskDefinitionRevision: TaskDefinitionRevision.LATEST,
         });
     }
 }
