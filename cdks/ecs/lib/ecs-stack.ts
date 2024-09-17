@@ -5,6 +5,7 @@ import { MyVpc } from './construct/my-vpc';
 import { MySecurityGroup } from './construct/my-security-group';
 import { Alb } from './construct/alb';
 import { Rds } from './construct/rds';
+import { Ecs } from './construct/ecs';
 
 export class EcsStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps, readonly resourceName = "sample-ecr-app") {
@@ -40,6 +41,15 @@ export class EcsStack extends cdk.Stack {
       vpc: myVpc.value,
       securityGroup: rdsSecurityGroup,
       subnets: myVpc.getRdsSubnets(),
+    });
+
+    // ECS
+    new Ecs(this, "EcsFargate", {
+      vpc: myVpc.value,
+      resourceName,
+      ecrRepository: ecr,
+      securityGroup: ecsSecurityGroup,
+      subnets: myVpc.getEcsSubnets(),
     });
   }
 }
