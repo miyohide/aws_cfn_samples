@@ -13,6 +13,8 @@ interface EcsProps {
 }
 
 export class Ecs extends Construct {
+    public readonly fargateService: FargateService;
+
     constructor(scope: Construct, id: string, props: EcsProps) {
         super(scope, id);
 
@@ -44,7 +46,7 @@ export class Ecs extends Construct {
             logging: logDriver,
         });
         // Fargate
-        new FargateService(this, "EcsFargateService", {
+        this.fargateService = new FargateService(this, "EcsFargateService", {
             cluster,
             taskDefinition: taskDef,
             desiredCount: 2,
