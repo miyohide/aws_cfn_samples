@@ -44,12 +44,22 @@ export class EcsStack extends cdk.Stack {
     });
 
     // ECS
-    new Ecs(this, "EcsFargate", {
+    const ecs = new Ecs(this, "EcsFargate", {
       vpc: myVpc.value,
       resourceName,
       ecrRepository: ecr,
       securityGroup: ecsSecurityGroup,
       subnets: myVpc.getEcsSubnets(),
+    });
+
+    // ターゲットグループにECSを追加
+    alb.addTargets("Ecs", {
+      port: 80,
+      targets: [],
+      healthCheck: {
+        path: "/",
+        interval: cdk.Duration.minutes(1),
+      },
     });
   }
 }
