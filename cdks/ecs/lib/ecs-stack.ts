@@ -36,7 +36,7 @@ export class EcsStack extends cdk.Stack {
     });
 
     // RDSを作成する
-    new Rds(this, "Rds", {
+    const rds = new Rds(this, "Rds", {
       resourceName,
       vpc: myVpc.value,
       securityGroup: rdsSecurityGroup,
@@ -50,6 +50,7 @@ export class EcsStack extends cdk.Stack {
       ecrRepository: ecr,
       securityGroup: ecsSecurityGroup,
       subnets: myVpc.getEcsSubnets(),
+      rdsInstance: rds.rdsPrimaryInstance,
     });
 
     // ターゲットグループにECSを追加
