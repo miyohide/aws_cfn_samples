@@ -10,15 +10,18 @@ interface RdsProps {
 }
 
 export class Rds extends Construct {
+    public readonly rdsPrimaryInstance: DatabaseInstance;
+    public readonly rdsCredentials: Credentials;
+
     constructor(scope: Construct, id: string, props: RdsProps) {
         super(scope, id);
 
-        const rdsCredentials = Credentials.fromGeneratedSecret("myrdsuser", {
+        this.rdsCredentials = Credentials.fromGeneratedSecret("myrdsuser", {
             secretName: `/${props.resourceName}/rds/`,
         });
 
         // プライマリインスタンスを作成する
-        const rdsPrimaryInstance = new DatabaseInstance(this, "RdsPrimaryInstance", {
+        this.rdsPrimaryInstance = new DatabaseInstance(this, "RdsPrimaryInstance", {
             engine: DatabaseInstanceEngine.postgres({
                 version: PostgresEngineVersion.VER_16_4,
             }),
@@ -26,7 +29,7 @@ export class Rds extends Construct {
                 InstanceClass.T3,
                 InstanceSize.MICRO,
             ),
-            credentials: rdsCredentials,
+            credentials: this.rdsCredentials,
             databaseName: "myrds",
             vpc: props.vpc,
             vpcSubnets: props.subnets,
@@ -37,7 +40,7 @@ export class Rds extends Construct {
 
         // リードレプリカの作成
         new DatabaseInstanceReadReplica(this, "RdsReadReplica", {
-            sourceDatabaseInstance: rdsPrimaryInstance,
+            sourceDatabaseInstance: this.rdsPrimaryInstance,
             instanceType: InstanceType.of(
                 InstanceClass.T3,
                 InstanceSize.MICRO,
