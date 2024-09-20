@@ -1,3 +1,4 @@
+import { RemovalPolicy } from "aws-cdk-lib";
 import { InstanceClass, InstanceSize, InstanceType, SecurityGroup, SubnetSelection, Vpc } from "aws-cdk-lib/aws-ec2";
 import { Credentials, DatabaseInstance, DatabaseInstanceEngine, DatabaseInstanceReadReplica, NetworkType, PostgresEngineVersion } from "aws-cdk-lib/aws-rds";
 import { Construct } from "constructs";
@@ -36,6 +37,7 @@ export class Rds extends Construct {
             networkType: NetworkType.IPV4,
             securityGroups: [props.securityGroup],
             availabilityZone: "ap-northeast-1a",
+            removalPolicy: RemovalPolicy.DESTROY,
         });
 
         // リードレプリカの作成
@@ -51,6 +53,7 @@ export class Rds extends Construct {
             securityGroups: [props.securityGroup],
             availabilityZone: "ap-northeast-1c",
             autoMinorVersionUpgrade: false,
+            removalPolicy: RemovalPolicy.DESTROY,
         });
     }
 }
