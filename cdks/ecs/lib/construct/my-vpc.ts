@@ -1,4 +1,4 @@
-import { GatewayVpcEndpointAwsService, InterfaceVpcEndpointAwsService, IpAddresses, SelectedSubnets, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2/lib";
+import { Vpc, IpAddresses, SubnetType, InterfaceVpcEndpointAwsService, GatewayVpcEndpointAwsService, SelectedSubnets } from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
 
 export class MyVpc extends Construct {
