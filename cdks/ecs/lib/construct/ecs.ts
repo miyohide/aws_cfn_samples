@@ -2,6 +2,7 @@ import { SecurityGroup, SubnetSelection, Vpc } from "aws-cdk-lib/aws-ec2";
 import { IRepository } from "aws-cdk-lib/aws-ecr";
 import { AwsLogDriver, Cluster, ContainerImage, CpuArchitecture, FargateService, FargateTaskDefinition, TaskDefinitionRevision } from "aws-cdk-lib/aws-ecs";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
+import { DatabaseInstance } from "aws-cdk-lib/aws-rds";
 import { Construct } from "constructs";
 
 interface EcsProps {
@@ -10,6 +11,7 @@ interface EcsProps {
     ecrRepository: IRepository;
     securityGroup: SecurityGroup;
     subnets: SubnetSelection;
+    rdsInstance: DatabaseInstance;
 }
 
 export class Ecs extends Construct {
@@ -44,6 +46,10 @@ export class Ecs extends Construct {
                 containerPort: 3000
             }],
             logging: logDriver,
+            environment: {
+                DB_HOST: props.rdsInstance.instanceEndpoint.hostname,
+                DB_PORT: String(props.rdsInstance.instanceEndpoint.port)
+            }
         });
         // Fargate
         this.fargateService = new FargateService(this, "EcsFargateService", {
