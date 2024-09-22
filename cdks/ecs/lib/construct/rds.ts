@@ -41,19 +41,19 @@ export class Rds extends Construct {
         });
 
         // リードレプリカの作成
-        new DatabaseInstanceReadReplica(this, "RdsReadReplica", {
-            sourceDatabaseInstance: this.rdsPrimaryInstance,
-            instanceType: InstanceType.of(
-                InstanceClass.T3,
-                InstanceSize.MICRO,
-            ),
-            vpc: props.vpc,
-            vpcSubnets: props.subnets,
-            networkType: NetworkType.IPV4,
-            securityGroups: [props.securityGroup],
-            availabilityZone: "ap-northeast-1c",
-            autoMinorVersionUpgrade: false,
-            removalPolicy: RemovalPolicy.DESTROY,
-        });
+        // new DatabaseInstanceReadReplica(this, "RdsReadReplica", {
+        //     sourceDatabaseInstance: this.rdsPrimaryInstance,
+        //     instanceType: InstanceType.of(
+        //         InstanceClass.T3,
+        //         InstanceSize.MICRO,
+        //     ),
+        //     vpc: props.vpc,
+        //     vpcSubnets: props.subnets,
+        //     networkType: NetworkType.IPV4,
+        //     securityGroups: [props.securityGroup],
+        //     availabilityZone: "ap-northeast-1c",
+        //     autoMinorVersionUpgrade: false,
+        //     removalPolicy: RemovalPolicy.DESTROY,
+        // });
     }
 }
