@@ -22,10 +22,10 @@ export class Alb extends Construct {
             vpc: props.vpc,
             targetType: TargetType.IP,
             protocol: ApplicationProtocol.HTTP,
-            port: 80,
+            port: 3000,
             healthCheck: {
                 path: "/",
-                port: "80",
+                port: "3000",
                 protocol: Protocol.HTTP,
             },
         });
