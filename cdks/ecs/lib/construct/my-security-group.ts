@@ -35,10 +35,10 @@ export class MySecurityGroup extends Construct {
         const securityGroup = new SecurityGroup(this, "EcsSecurityGroup", {
             securityGroupName: `${resourceName}-ecs-sg`,
             vpc,
-            description: "Allow HTTP inbound traffic. Allow all outbound trafic",
+            description: "Allow Rails app inbound traffic. Allow all outbound trafic",
             allowAllOutbound: true
         });
-        securityGroup.addIngressRule(this.albSecurityGroup, Port.HTTP, "Allow HTTP inbound");
+        securityGroup.addIngressRule(this.albSecurityGroup, Port.tcp(3000), "Allow Rails app inbound");
 
         return securityGroup;
     }
