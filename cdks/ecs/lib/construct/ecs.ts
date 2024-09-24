@@ -51,6 +51,10 @@ export class Ecs extends Construct {
                 POSTGRES_HOST: props.rdsInstance.instanceEndpoint.hostname,
                 POSTGRES_USER: props.rdsCredentials.username,
                 POSTGRES_PASSWORD: props.rdsCredentials.password?.toString()!,
+                RAILS_ENV: "production",
+                RAILS_LOG_TO_STDOUT: "1",
+                RAILS_SERVE_STATIC_FILES: "1",
+                RAILS_MASTER_KEY: "foobar"
             }
         });
         // Fargate

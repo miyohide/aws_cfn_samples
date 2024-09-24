@@ -43,25 +43,25 @@ export class EcsStack extends cdk.Stack {
       subnets: myVpc.getRdsSubnets(),
     });
 
-    // // ECS
-    // const ecs = new Ecs(this, "EcsFargate", {
-    //   vpc: myVpc.value,
-    //   resourceName,
-    //   ecrRepository: ecr,
-    //   securityGroup: ecsSecurityGroup,
-    //   subnets: myVpc.getEcsSubnets(),
-    //   rdsInstance: rds.rdsPrimaryInstance,
-    //   rdsCredentials: rds.rdsCredentials,
-    // });
+    // ECS
+    const ecs = new Ecs(this, "EcsFargate", {
+      vpc: myVpc.value,
+      resourceName,
+      ecrRepository: ecr,
+      securityGroup: ecsSecurityGroup,
+      subnets: myVpc.getEcsSubnets(),
+      rdsInstance: rds.rdsPrimaryInstance,
+      rdsCredentials: rds.rdsCredentials,
+    });
 
-    // // ターゲットグループにECSを追加
-    // alb.addTargets("Ecs", {
-    //   port: 80,
-    //   targets: [],
-    //   healthCheck: {
-    //     path: "/",
-    //     interval: cdk.Duration.minutes(1),
-    //   },
-    // });
+    // ターゲットグループにECSを追加
+    alb.addTargets("Ecs", {
+      port: 3000,
+      targets: [ecs.fargateService],
+      healthCheck: {
+        path: "/",
+        interval: cdk.Duration.minutes(1),
+      },
+    });
   }
 }
