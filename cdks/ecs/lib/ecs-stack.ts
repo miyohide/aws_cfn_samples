@@ -12,11 +12,11 @@ export class EcsStack extends cdk.Stack {
     super(scope, id, props);
 
     // ECRを作成する
-    const ecr = new Repository(this, "EcrRepository", {
-      repositoryName: `${resourceName}-ecr`,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      emptyOnDelete: true,
-    });
+    // const ecr = new Repository(this, "EcrRepository", {
+    //   repositoryName: `${resourceName}-ecr`,
+    //   removalPolicy: cdk.RemovalPolicy.DESTROY,
+    //   emptyOnDelete: true,
+    // });
 
     // VPCを作成する
     const myVpc = new MyVpc(this, "VPC", resourceName);
@@ -44,24 +44,24 @@ export class EcsStack extends cdk.Stack {
     });
 
     // ECS
-    const ecs = new Ecs(this, "EcsFargate", {
-      vpc: myVpc.value,
-      resourceName,
-      ecrRepository: ecr,
-      securityGroup: ecsSecurityGroup,
-      subnets: myVpc.getEcsSubnets(),
-      rdsInstance: rds.rdsPrimaryInstance,
-      rdsCredentials: rds.rdsCredentials,
-    });
+    // const ecs = new Ecs(this, "EcsFargate", {
+    //   vpc: myVpc.value,
+    //   resourceName,
+    //   ecrRepository: ecr,
+    //   securityGroup: ecsSecurityGroup,
+    //   subnets: myVpc.getEcsSubnets(),
+    //   rdsInstance: rds.rdsPrimaryInstance,
+    //   rdsCredentials: rds.rdsCredentials,
+    // });
 
     // ターゲットグループにECSを追加
-    alb.addTargets("Ecs", {
-      port: 3000,
-      targets: [ecs.fargateService],
-      healthCheck: {
-        path: "/",
-        interval: cdk.Duration.minutes(1),
-      },
-    });
+    // alb.addTargets("Ecs", {
+    //   port: 3000,
+    //   targets: [ecs.fargateService],
+    //   healthCheck: {
+    //     path: "/",
+    //     interval: cdk.Duration.minutes(1),
+    //   },
+    // });
   }
 }
