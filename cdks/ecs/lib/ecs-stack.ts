@@ -11,7 +11,10 @@ export class EcsStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps, readonly resourceName = "sample-ecr-app") {
     super(scope, id, props);
 
-    // ECRを作成する
+    const ecrName = scope.node.tryGetContext("ecrName");
+
+    // ECRを名前から取得する
+    const ecr = Repository.fromRepositoryName(scope, "EcrRepository", ecrName);
     // const ecr = new Repository(this, "EcrRepository", {
     //   repositoryName: `${resourceName}-ecr`,
     //   removalPolicy: cdk.RemovalPolicy.DESTROY,
