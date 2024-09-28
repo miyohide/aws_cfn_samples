@@ -6,7 +6,7 @@ export class EcrFromNameStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const ecrName = scope.node.tryGetContext("ecrName");
+    const ecrName = this.node.tryGetContext("ecrName");
 
     const ecr = Repository.fromRepositoryName(this, "ECR", ecrName);
 
