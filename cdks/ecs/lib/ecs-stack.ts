@@ -41,25 +41,28 @@ export class EcsStack extends cdk.Stack {
       subnets: myVpc.getRdsSubnets(),
     });
 
+    const railsMasterKey = this.node.tryGetContext("railsMasterKey");
+
     // ECS
-    // const ecs = new Ecs(this, "EcsFargate", {
-    //   vpc: myVpc.value,
-    //   resourceName,
-    //   ecrRepository: ecr,
-    //   securityGroup: ecsSecurityGroup,
-    //   subnets: myVpc.getEcsSubnets(),
-    //   rdsInstance: rds.rdsPrimaryInstance,
-    //   rdsCredentials: rds.rdsCredentials,
-    // });
+    const ecs = new Ecs(this, "EcsFargate", {
+      vpc: myVpc.value,
+      resourceName,
+      ecrRepository: ecr,
+      securityGroup: ecsSecurityGroup,
+      subnets: myVpc.getEcsSubnets(),
+      rdsInstance: rds.rdsPrimaryInstance,
+      rdsCredentials: rds.rdsCredentials,
+      railsMasterKey: railsMasterKey,
+    });
 
     // ターゲットグループにECSを追加
-    // alb.addTargets("Ecs", {
-    //   port: 3000,
-    //   targets: [ecs.fargateService],
-    //   healthCheck: {
-    //     path: "/",
-    //     interval: cdk.Duration.minutes(1),
-    //   },
-    // });
+    alb.addTargets("Ecs", {
+      port: 3000,
+      targets: [ecs.fargateService],
+      healthCheck: {
+        path: "/",
+        interval: cdk.Duration.minutes(1),
+      },
+    });
   }
 }
