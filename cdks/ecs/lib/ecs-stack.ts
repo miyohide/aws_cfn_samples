@@ -60,7 +60,7 @@ export class EcsStack extends cdk.Stack {
       port: 3000,
       targets: [ecs.fargateService],
       healthCheck: {
-        path: "/",
+        path: "/up",
         interval: cdk.Duration.minutes(1),
       },
     });
