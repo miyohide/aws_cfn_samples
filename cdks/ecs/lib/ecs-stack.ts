@@ -52,7 +52,6 @@ export class EcsStack extends cdk.Stack {
       securityGroup: ecsSecurityGroup,
       subnets: myVpc.getEcsSubnets(),
       rdsInstance: rds.rdsPrimaryInstance,
-      rdsCredentials: rds.rdsCredentials,
       railsMasterKey: railsMasterKey,
     });
 
