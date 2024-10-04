@@ -6,6 +6,7 @@ import { MySecurityGroup } from './construct/my-security-group';
 import { Alb } from './construct/alb';
 import { Rds } from './construct/rds';
 import { Ecs } from './construct/ecs';
+import { ApplicationProtocol } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
 export class EcsStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps, readonly resourceName = "sample-ecr-app") {
@@ -58,6 +59,7 @@ export class EcsStack extends cdk.Stack {
     // ターゲットグループにECSを追加
     alb.addTargets("Ecs", {
       port: 3000,
+      protocol: ApplicationProtocol.HTTP,
       targets: [ecs.fargateService],
       healthCheck: {
         path: "/up",
