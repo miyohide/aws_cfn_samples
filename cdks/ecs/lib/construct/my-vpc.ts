@@ -48,6 +48,9 @@ export class MyVpc extends Construct {
         this.value.addInterfaceEndpoint("CwLogsEndpoint", {
             service: InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS,
         });
+        this.value.addInterfaceEndpoint("SecretsManagerEndpoint", {
+            service: InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+        });
         this.value.addGatewayEndpoint("S3Endpoint", {
             service: GatewayVpcEndpointAwsService.S3,
             subnets: [
