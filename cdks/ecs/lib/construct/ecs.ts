@@ -49,8 +49,9 @@ export class Ecs extends Construct {
             logging: logDriver,
             environment: {
                 POSTGRES_HOST: props.rdsInstance.instanceEndpoint.hostname,
-                POSTGRES_USER: String(props.rdsInstance.secret?.secretValueFromJson("username")),
-                POSTGRES_PASSWORD: String(props.rdsInstance.secret?.secretValueFromJson("password")),
+                // FIXME
+                // POSTGRES_USER: String(props.rdsInstance.secret?.secretValueFromJson("username")),
+                // POSTGRES_PASSWORD: String(props.rdsInstance.secret?.secretValueFromJson("password")),
                 RAILS_ENV: "production",
                 RAILS_LOG_TO_STDOUT: "1",
                 RAILS_SERVE_STATIC_FILES: "1",
