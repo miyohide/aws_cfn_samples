@@ -13,7 +13,7 @@ interface RdsProps {
 
 export class Rds extends Construct {
     public readonly rdsPrimaryInstance: DatabaseInstance;
-    // public readonly rdsCredentials: Credentials;
+    public readonly rdsCredentials: Credentials;
 
     constructor(scope: Construct, id: string, props: RdsProps) {
         super(scope, id);
@@ -29,9 +29,9 @@ export class Rds extends Construct {
             }
         });
 
-        // this.rdsCredentials = Credentials.fromGeneratedSecret("myrdsuser", {
-        //     secretName: `/${props.resourceName}/rds/`,
-        // });
+        this.rdsCredentials = Credentials.fromGeneratedSecret("myrdsuser", {
+            secretName: `/${props.resourceName}/rds/`,
+        });
 
         // プライマリインスタンスを作成する
         this.rdsPrimaryInstance = new DatabaseInstance(this, "RdsPrimaryInstance", {
@@ -42,12 +42,13 @@ export class Rds extends Construct {
                 InstanceClass.T3,
                 InstanceSize.MICRO,
             ),
-            credentials: Credentials.fromPassword(
-                databaseCredentaiSecret.secretValueFromJson("username").toString(),
-                SecretValue.unsafePlainText(
-                    databaseCredentaiSecret.secretValueFromJson("password").toString()
-                )
-            ),
+            credentials: this.rdsCredentials,
+            // credentials: Credentials.fromPassword(
+            //     databaseCredentaiSecret.secretValueFromJson("username").toString(),
+            //     SecretValue.unsafePlainText(
+            //         databaseCredentaiSecret.secretValueFromJson("password").toString()
+            //     )
+            // ),
             databaseName: "myrds",
             vpc: props.vpc,
             vpcSubnets: props.subnets,
