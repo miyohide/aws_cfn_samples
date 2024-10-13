@@ -1,8 +1,8 @@
 import { SecurityGroup, SubnetSelection, Vpc } from "aws-cdk-lib/aws-ec2";
 import { IRepository } from "aws-cdk-lib/aws-ecr";
-import { AwsLogDriver, Cluster, ContainerImage, CpuArchitecture, FargateService, FargateTaskDefinition, TaskDefinitionRevision } from "aws-cdk-lib/aws-ecs";
+import { AwsLogDriver, Cluster, ContainerImage, CpuArchitecture, FargateService, FargateTaskDefinition, Secret, TaskDefinitionRevision } from "aws-cdk-lib/aws-ecs";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
-import { Credentials, DatabaseInstance } from "aws-cdk-lib/aws-rds";
+import { DatabaseInstance } from "aws-cdk-lib/aws-rds";
 import { Construct } from "constructs";
 
 interface EcsProps {
@@ -40,6 +40,10 @@ export class Ecs extends Construct {
             streamPrefix: "ecs",
             logRetention: RetentionDays.ONE_DAY,
         });
+
+        // Secrets Manager
+        const secretsManager = props.rdsInstance.secret!;
+
         // コンテナ定義を追加
         taskDef.addContainer("EcsContainer", {
             image: ContainerImage.fromEcrRepository(props.ecrRepository, "latest"),
@@ -49,14 +53,15 @@ export class Ecs extends Construct {
             logging: logDriver,
             environment: {
                 POSTGRES_HOST: props.rdsInstance.instanceEndpoint.hostname,
-                // FIXME
-                // POSTGRES_USER: String(props.rdsInstance.secret?.secretValueFromJson("username")),
-                // POSTGRES_PASSWORD: String(props.rdsInstance.secret?.secretValueFromJson("password")),
                 RAILS_ENV: "production",
                 RAILS_LOG_TO_STDOUT: "1",
                 RAILS_SERVE_STATIC_FILES: "1",
                 RAILS_MASTER_KEY: props.railsMasterKey,
-            }
+            },
+            secrets: {
+                POSTGRES_USER: Secret.fromSecretsManager(secretsManager, "username"),
+                POSTGRES_PASSWORD: Secret.fromSecretsManager(secretsManager, "password"),
+            },
         });
         // Fargate
         this.fargateService = new FargateService(this, "EcsFargateService", {
