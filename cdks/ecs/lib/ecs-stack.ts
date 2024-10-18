@@ -9,7 +9,7 @@ import { Ecs } from './construct/ecs';
 import { ApplicationProtocol } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
 export class EcsStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps, readonly resourceName = "sample-ecr-app") {
+  constructor(scope: Construct, id: string, props?: cdk.StackProps, readonly resourceName = "sample-ecs-app") {
     super(scope, id, props);
 
     const ecrName = this.node.tryGetContext("ecrName");
