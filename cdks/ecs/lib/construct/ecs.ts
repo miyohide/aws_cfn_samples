@@ -1,6 +1,7 @@
 import { SecurityGroup, SubnetSelection, Vpc } from "aws-cdk-lib/aws-ec2";
 import { IRepository } from "aws-cdk-lib/aws-ecr";
 import { AwsLogDriver, Cluster, ContainerImage, CpuArchitecture, FargateService, FargateTaskDefinition, Secret, TaskDefinitionRevision } from "aws-cdk-lib/aws-ecs";
+import { Effect, PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { DatabaseInstance } from "aws-cdk-lib/aws-rds";
 import { Construct } from "constructs";
@@ -63,6 +64,18 @@ export class Ecs extends Construct {
                 POSTGRES_PASSWORD: Secret.fromSecretsManager(secretsManager, "password"),
             },
         });
+
+        taskDef.addToExecutionRolePolicy(new PolicyStatement({
+            effect: Effect.ALLOW,
+            resources: [secretsManager.secretArn],
+            actions: [
+                'secretsmanager:GetResourcePolicy',
+                'secretsmanager:GetSecretValue',
+                'secretsmanager:DescribeSecret',
+                'secretsmanager:ListSecretVersionIds'
+            ]
+        }));
+
         // Fargate
         this.fargateService = new FargateService(this, "EcsFargateService", {
             cluster,
