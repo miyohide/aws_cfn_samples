@@ -109,23 +109,10 @@ export class RdsMaintenanceEnvStack extends cdk.Stack {
     });
 
     // RDSインスタンスを作成する（PostgreSQL）
-    // const rdsInstance = new DatabaseInstance(this, 'RDSInstance', {
-    //   instanceIdentifier: 'MyRDSTestPostgresDB',
-    //   vpc: vpc,
-    //   engine: DatabaseInstanceEngine.POSTGRES,
-    //   instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.MICRO),
-    //   databaseName: 'mypgdb',
-    //   multiAz: false,
-    //   subnetGroup: dbSubnetGroup,
-    //   securityGroups: [rdsSg],
-    //   removalPolicy: RemovalPolicy.DESTROY,
-    // });
-
-    // RDSインスタンスを作成する（MySQL）
     const rdsInstance = new DatabaseInstance(this, 'RDSInstance', {
-      instanceIdentifier: 'MyRDSTestMySQLDB',
+      instanceIdentifier: 'MyRDSTestPostgresDB',
       vpc: vpc,
-      engine: DatabaseInstanceEngine.MYSQL,
+      engine: DatabaseInstanceEngine.POSTGRES,
       instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.MICRO),
       databaseName: 'mypgdb',
       multiAz: false,
@@ -134,6 +121,19 @@ export class RdsMaintenanceEnvStack extends cdk.Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    rdsInstance.connections.allowDefaultPortFrom(ec2Instance, "allow connect from ec2");
+    // RDSインスタンスを作成する（MySQL）
+    // const rdsInstance = new DatabaseInstance(this, 'RDSInstance', {
+    //   instanceIdentifier: 'MyRDSTestMySQLDB',
+    //   vpc: vpc,
+    //   engine: DatabaseInstanceEngine.MYSQL,
+    //   instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.MICRO),
+    //   databaseName: 'mypgdb',
+    //   multiAz: false,
+    //   subnetGroup: dbSubnetGroup,
+    //   securityGroups: [rdsSg],
+    //   removalPolicy: RemovalPolicy.DESTROY,
+    // });
+
+    // rdsInstance.connections.allowDefaultPortFrom(ec2Instance, "allow connect from ec2");
   }
 }
