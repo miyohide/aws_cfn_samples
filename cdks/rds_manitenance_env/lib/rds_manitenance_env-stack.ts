@@ -134,6 +134,6 @@ export class RdsMaintenanceEnvStack extends cdk.Stack {
     //   removalPolicy: RemovalPolicy.DESTROY,
     // });
 
-    // rdsInstance.connections.allowDefaultPortFrom(ec2Instance, "allow connect from ec2");
+    rdsInstance.connections.allowDefaultPortFrom(ec2Instance, "allow connect from ec2");
   }
 }
