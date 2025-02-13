@@ -1,13 +1,13 @@
-import * as cdk from 'aws-cdk-lib';
 import { Vpc } from 'aws-cdk-lib/aws-ec2/lib/vpc';
 import { Cluster, ContainerDefinition, ContainerImage, FargateTaskDefinition } from 'aws-cdk-lib/aws-ecs';
 import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode } from 'aws-cdk-lib/aws-efs';
 import { AnyPrincipal, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { Stack, StackProps } from 'aws-cdk-lib/core/lib/stack';
 import { Construct } from 'constructs';
 
-export class EcsWithEfsStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+export class EcsWithEfsStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const vpc = new Vpc(this, 'MyVPC', { maxAzs: 2});
