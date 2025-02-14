@@ -1,9 +1,9 @@
-import { Vpc } from 'aws-cdk-lib/aws-ec2/lib/vpc';
+import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Cluster, ContainerDefinition, ContainerImage, FargateTaskDefinition } from 'aws-cdk-lib/aws-ecs';
 import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode } from 'aws-cdk-lib/aws-efs';
 import { AnyPrincipal, PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { Stack, StackProps } from 'aws-cdk-lib/core/lib/stack';
+import { Stack, StackProps } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 
 export class EcsWithEfsStack extends Stack {
