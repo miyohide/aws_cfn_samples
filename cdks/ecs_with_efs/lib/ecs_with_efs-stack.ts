@@ -3,7 +3,7 @@ import { Cluster, ContainerDefinition, ContainerImage, FargateTaskDefinition } f
 import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode } from 'aws-cdk-lib/aws-efs';
 import { AnyPrincipal, PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { Stack, StackProps } from 'aws-cdk-lib/core';
+import { RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 
 export class EcsWithEfsStack extends Stack {
@@ -16,6 +16,7 @@ export class EcsWithEfsStack extends Stack {
     const fileSystem = new FileSystem(this, 'MyEfsFileSystem', {
       vpc: vpc,
       encrypted: true,
+      removalPolicy: RemovalPolicy.DESTROY,
       lifecyclePolicy: LifecyclePolicy.AFTER_14_DAYS,
       performanceMode: PerformanceMode.GENERAL_PURPOSE,
       throughputMode: ThroughputMode.BURSTING
