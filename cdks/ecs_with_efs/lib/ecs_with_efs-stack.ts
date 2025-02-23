@@ -66,16 +66,18 @@ export class EcsWithEfsStack extends Stack {
     );
 
     containerDef.addPortMappings({
-      containerPort: 8000,
+      containerPort: 3000,
     });
 
     const albFargateService = new ApplicationLoadBalancedFargateService(this, 'MyALBService', {
       cluster: ecsCluster,
       taskDefinition: taskDef,
-      desiredCount: 2
+      desiredCount: 2,
+      listenerPort: 3000,
     });
 
     albFargateService.targetGroup.setAttribute('deregistration_delay.timeout_seconds', '30');
+
 
     fileSystem.grantRootAccess(albFargateService.taskDefinition.taskRole.grantPrincipal);
     fileSystem.connections.allowDefaultPortFrom(albFargateService.service.connections);
