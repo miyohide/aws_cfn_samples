@@ -49,7 +49,12 @@ export class EcsWithEfsStack extends Stack {
 
     const containerDef = new ContainerDefinition(this, 'MyContainerDefinition', {
       image: ContainerImage.fromRegistry('coderaiser/cloudcmd'),
-      taskDefinition: taskDef
+      taskDefinition: taskDef,
+      environment: {
+        RAILS_ENV: "production",
+        RAILS_LOG_TO_STDOUT: "1",
+        RAILS_SERVE_STATIC_FILES: "1"
+      }
     });
 
     containerDef.addMountPoints(
