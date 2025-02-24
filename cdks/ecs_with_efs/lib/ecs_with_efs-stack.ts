@@ -1,8 +1,9 @@
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
-import { Cluster, ContainerDefinition, ContainerImage, CpuArchitecture, FargateTaskDefinition, OperatingSystemFamily } from 'aws-cdk-lib/aws-ecs';
+import { Cluster, ContainerDefinition, ContainerImage, CpuArchitecture, FargateTaskDefinition, LogDrivers, OperatingSystemFamily } from 'aws-cdk-lib/aws-ecs';
 import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode } from 'aws-cdk-lib/aws-efs';
 import { AnyPrincipal, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 
@@ -53,6 +54,7 @@ export class EcsWithEfsStack extends Stack {
 
     const containerDef = new ContainerDefinition(this, 'MyContainerDefinition', {
       image: ContainerImage.fromRegistry('coderaiser/cloudcmd'),
+      logging: LogDrivers.awsLogs({ streamPrefix: 'myrailsecs', logRetention: RetentionDays.ONE_DAY }),
       taskDefinition: taskDef,
       environment: {
         RAILS_ENV: "production",
