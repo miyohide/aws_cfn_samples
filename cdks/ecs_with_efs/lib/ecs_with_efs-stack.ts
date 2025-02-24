@@ -1,5 +1,5 @@
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
-import { Cluster, ContainerDefinition, ContainerImage, FargateTaskDefinition } from 'aws-cdk-lib/aws-ecs';
+import { Cluster, ContainerDefinition, ContainerImage, CpuArchitecture, FargateTaskDefinition, OperatingSystemFamily } from 'aws-cdk-lib/aws-ecs';
 import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode } from 'aws-cdk-lib/aws-efs';
 import { AnyPrincipal, PolicyStatement } from 'aws-cdk-lib/aws-iam';
@@ -37,6 +37,10 @@ export class EcsWithEfsStack extends Stack {
     const taskDef = new FargateTaskDefinition(this, "MyTaskDef", {
       memoryLimitMiB: 512,
       cpu: 256,
+      runtimePlatform: {
+        operatingSystemFamily: OperatingSystemFamily.LINUX,
+        cpuArchitecture: CpuArchitecture.ARM64
+      },
       volumes: [
         {
           name: "uploads",
