@@ -1,7 +1,8 @@
-import { Vpc } from 'aws-cdk-lib/aws-ec2';
+import { Peer, Port, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Cluster, ContainerDefinition, ContainerImage, CpuArchitecture, FargateTaskDefinition, LogDrivers, OperatingSystemFamily } from 'aws-cdk-lib/aws-ecs';
 import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode } from 'aws-cdk-lib/aws-efs';
+import { ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup, Protocol, TargetType } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { AnyPrincipal, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib/core';
@@ -76,11 +77,48 @@ export class EcsWithEfsStack extends Stack {
       containerPort: 3000,
     });
 
+    // ターゲットグループの作成
+    const targetGroup = new ApplicationTargetGroup(this, "ALBTargetGroup", {
+      targetGroupName: "MyALBTargetGroupName",
+      vpc: vpc,
+      targetType: TargetType.IP,
+      protocol: ApplicationProtocol.HTTP,
+      port: 3000,
+      healthCheck: {
+        path: "/",
+        port: "3000",
+        protocol: Protocol.HTTP,
+      },
+    });
+
+    // ALB向けのセキュリティグループを設定
+    const securityGroupForALB = new SecurityGroup(this, "ALBSecurityGroup", {
+      securityGroupName: "MyALBSecurityGroup",
+      description: "ALB Security Group",
+      vpc: vpc,
+      allowAllOutbound: true,
+    });
+    securityGroupForALB.addIngressRule(Peer.anyIpv4(), Port.HTTP, "Allow HTTP inboud");
+    securityGroupForALB.addIngressRule(Peer.anyIpv4(), Port.HTTPS, "Allow TCP HTTPS inboud")
+
+    // ALBを作成
+    const alb = new ApplicationLoadBalancer(this, 'MyALB', {
+      internetFacing: true,
+      vpc: vpc,
+      loadBalancerName: 'MyALB',
+      securityGroup: securityGroupForALB,
+    });
+
+    alb.addListener("AlbListener", {
+      protocol: ApplicationProtocol.HTTP,
+      defaultTargetGroups: [targetGroup],
+    });
+
     const albFargateService = new ApplicationLoadBalancedFargateService(this, 'MyALBService', {
       cluster: ecsCluster,
       taskDefinition: taskDef,
       desiredCount: 2,
-      listenerPort: 3000,
+      loadBalancer: alb,
     });
 
     albFargateService.targetGroup.setAttribute('deregistration_delay.timeout_seconds', '30');
