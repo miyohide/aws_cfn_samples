@@ -5,7 +5,7 @@ import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode } from 'aw
 import { ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup, Protocol, TargetType } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { AnyPrincipal, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
-import { RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib/core';
+import { Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 
 export class EcsWithEfsStack extends Stack {
@@ -81,11 +81,10 @@ export class EcsWithEfsStack extends Stack {
     const targetGroup = new ApplicationTargetGroup(this, "ALBTargetGroup", {
       targetGroupName: "MyALBTargetGroupName",
       vpc: vpc,
-      targetType: TargetType.IP,
       protocol: ApplicationProtocol.HTTP,
       port: 3000,
       healthCheck: {
-        path: "/",
+        path: "/up",
         port: "3000",
         protocol: Protocol.HTTP,
       },
@@ -122,7 +121,6 @@ export class EcsWithEfsStack extends Stack {
     });
 
     albFargateService.targetGroup.setAttribute('deregistration_delay.timeout_seconds', '30');
-
 
     fileSystem.grantRootAccess(albFargateService.taskDefinition.taskRole.grantPrincipal);
     fileSystem.connections.allowDefaultPortFrom(albFargateService.service.connections);
