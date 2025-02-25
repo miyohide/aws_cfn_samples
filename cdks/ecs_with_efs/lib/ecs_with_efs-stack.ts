@@ -77,47 +77,21 @@ export class EcsWithEfsStack extends Stack {
       containerPort: 3000,
     });
 
-    // ターゲットグループの作成
-    const targetGroup = new ApplicationTargetGroup(this, "ALBTargetGroup", {
-      targetGroupName: "MyALBTargetGroupName",
-      vpc: vpc,
-      protocol: ApplicationProtocol.HTTP,
-      port: 3000,
-      healthCheck: {
-        path: "/up",
-        port: "3000",
-        protocol: Protocol.HTTP,
-      },
-    });
-
-    // ALB向けのセキュリティグループを設定
-    const securityGroupForALB = new SecurityGroup(this, "ALBSecurityGroup", {
-      securityGroupName: "MyALBSecurityGroup",
-      description: "ALB Security Group",
-      vpc: vpc,
-      allowAllOutbound: true,
-    });
-    securityGroupForALB.addIngressRule(Peer.anyIpv4(), Port.HTTP, "Allow HTTP inboud");
-    securityGroupForALB.addIngressRule(Peer.anyIpv4(), Port.HTTPS, "Allow TCP HTTPS inboud")
-
-    // ALBを作成
-    const alb = new ApplicationLoadBalancer(this, 'MyALB', {
-      internetFacing: true,
-      vpc: vpc,
-      loadBalancerName: 'MyALB',
-      securityGroup: securityGroupForALB,
-    });
-
-    alb.addListener("AlbListener", {
-      protocol: ApplicationProtocol.HTTP,
-      defaultTargetGroups: [targetGroup],
-    });
-
     const albFargateService = new ApplicationLoadBalancedFargateService(this, 'MyALBService', {
       cluster: ecsCluster,
       taskDefinition: taskDef,
-      desiredCount: 2,
-      loadBalancer: alb,
+      desiredCount: 2
+    });
+
+    // ヘルスチェックの設定
+    albFargateService.targetGroup.configureHealthCheck({
+      path: "/up",
+      port: "3000",
+      protocol: Protocol.HTTP,
+      interval: Duration.seconds(15),
+      timeout: Duration.seconds(10),
+      healthyThresholdCount: 2,
+      unhealthyThresholdCount: 2,
     });
 
     albFargateService.targetGroup.setAttribute('deregistration_delay.timeout_seconds', '30');
