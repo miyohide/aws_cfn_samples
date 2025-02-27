@@ -8,7 +8,10 @@ export class EcsWithEfsStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const vpc = new Vpc(this, 'MyVPC', { maxAzs: 2});
+    const vpc = new Vpc(this, 'MyVPC', {
+      maxAzs: 2,
+      natGateways: 1
+    });
     const ecsCluster = new Cluster(this, 'EcsCluster', { vpc: vpc });
 
     // const fileSystem = new FileSystem(this, 'MyEfsFileSystem', {
