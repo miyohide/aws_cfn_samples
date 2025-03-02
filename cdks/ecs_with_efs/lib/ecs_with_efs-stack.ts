@@ -83,7 +83,7 @@ export class EcsWithEfsStack extends Stack {
         RAILS_ENV: "production",
         RAILS_LOG_TO_STDOUT: "1",
         RAILS_SERVE_STATIC_FILES: "1",
-        RALS_MASTER_KEY: this.node.tryGetContext("RAILS_MASTER_KEY")
+        RAILS_MASTER_KEY: this.node.tryGetContext("RAILS_MASTER_KEY")
       }
     });
 
