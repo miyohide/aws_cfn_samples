@@ -1,18 +1,41 @@
-import { Vpc } from 'aws-cdk-lib/aws-ec2';
-import { Cluster, ContainerDefinition, ContainerImage, CpuArchitecture, FargateTaskDefinition, LogDrivers, OperatingSystemFamily } from 'aws-cdk-lib/aws-ecs';
+import { Peer, Port, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { Cluster, ContainerDefinition, ContainerImage, CpuArchitecture, FargateService, FargateTaskDefinition, LogDrivers, OperatingSystemFamily } from 'aws-cdk-lib/aws-ecs';
+import { ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup, Protocol, TargetType } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
-import { Stack, StackProps } from 'aws-cdk-lib/core';
+import { Duration, Stack, StackProps } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 
 export class EcsWithEfsStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    const resourceName = "MyRailsApp";
+
     const vpc = new Vpc(this, 'MyVPC', {
       maxAzs: 2,
       natGateways: 1
     });
     const ecsCluster = new Cluster(this, 'EcsCluster', { vpc: vpc });
+
+    // セキュリティグループを作成する
+    // ALB向けセキュリティグループ
+    const securityGroupForALB = new SecurityGroup(this, 'SecurityGroupForALB', {
+      securityGroupName: `${resourceName}-security-group-for-ALB`,
+      vpc: vpc,
+      description: "Allow HTTP(S) inbound traffic. Allow all outbound traffic.",
+      allowAllOutbound: true
+    });
+    securityGroupForALB.addIngressRule(Peer.anyIpv4(), Port.HTTP, "Allow HTTP inbound traffic");
+    securityGroupForALB.addIngressRule(Peer.anyIpv4(), Port.HTTPS, "Allow HTTPS inbound traffic");
+
+    // ECS向けセキュリティグループ
+    const securityGroupForECS = new SecurityGroup(this, 'SecurityGroupForECS', {
+      securityGroupName: `${resourceName}-security-group-for-ECS`,
+      vpc: vpc,
+      description: "Allow Rails app inbound traffic. Allow all outbound traffic.",
+      allowAllOutbound: true
+    });
+    securityGroupForECS.addIngressRule(securityGroupForALB, Port.tcp(3000), "Allow Rails app inbound traffic");
 
     // const fileSystem = new FileSystem(this, 'MyEfsFileSystem', {
     //   vpc: vpc,
@@ -76,24 +99,57 @@ export class EcsWithEfsStack extends Stack {
       containerPort: 3000,
     });
 
-    // const albFargateService = new ApplicationLoadBalancedFargateService(this, 'MyALBService', {
-    //   cluster: ecsCluster,
-    //   taskDefinition: taskDef,
-    //   desiredCount: 2
-    // });
+    // Fargate Serviceを作成する
+    const fargateService = new FargateService(this, 'MyFargateService', {
+      cluster: ecsCluster,
+      taskDefinition: taskDef,
+      desiredCount: 2,
+      securityGroups: [securityGroupForECS],
+      vpcSubnets: {
+        subnets: vpc.privateSubnets
+      }
+    });
 
-    // ヘルスチェックの設定
-    // albFargateService.targetGroup.configureHealthCheck({
-    //   path: "/up",
-    //   port: "3000",
-    //   protocol: Protocol.HTTP,
-    //   interval: Duration.seconds(15),
-    //   timeout: Duration.seconds(10),
-    //   healthyThresholdCount: 2,
-    //   unhealthyThresholdCount: 2,
-    // });
+    // ターゲットグループを作成する
+    const targetGroup = new ApplicationTargetGroup(this, "ALBTargetGroup", {
+      targetGroupName: `${resourceName}-target-group`,
+      vpc: vpc,
+      port: 3000,
+      protocol: ApplicationProtocol.HTTP,
+      healthCheck: {
+        path: "/up",
+        port: "3000",
+        protocol: Protocol.HTTP
+      },
+      targetType: TargetType.IP
+    });
 
-    // albFargateService.targetGroup.setAttribute('deregistration_delay.timeout_seconds', '30');
+    // ALBの作成
+    const alb = new ApplicationLoadBalancer(this, 'MyALB', {
+      vpc: vpc,
+      internetFacing: true,
+      securityGroup: securityGroupForALB,
+      vpcSubnets: {
+        subnets: vpc.publicSubnets
+      }
+    });
+
+    // リスナーの作成
+    const listener = alb.addListener("MyALBListener", {
+      protocol: ApplicationProtocol.HTTP,
+      defaultTargetGroups: [targetGroup]
+    });
+
+    // ターゲットグループにECSを追加
+    listener.addTargets("ECSTarget", {
+      port: 3000,
+      protocol: ApplicationProtocol.HTTP,
+      targets: [fargateService],
+      healthCheck: {
+        path: "/up",
+        interval: Duration.seconds(30)
+      }
+    });
 
     // fileSystem.grantRootAccess(albFargateService.taskDefinition.taskRole.grantPrincipal);
     // fileSystem.connections.allowDefaultPortFrom(albFargateService.service.connections);
