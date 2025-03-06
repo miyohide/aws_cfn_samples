@@ -1,8 +1,10 @@
 import { Peer, Port, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Cluster, ContainerDefinition, ContainerImage, CpuArchitecture, FargateService, FargateTaskDefinition, LogDrivers, OperatingSystemFamily } from 'aws-cdk-lib/aws-ecs';
+import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode } from 'aws-cdk-lib/aws-efs';
 import { ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup, Protocol, TargetType } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import { AnyPrincipal, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
-import { Duration, Stack, StackProps } from 'aws-cdk-lib/core';
+import { Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 
 export class EcsWithEfsStack extends Stack {
@@ -37,26 +39,37 @@ export class EcsWithEfsStack extends Stack {
     });
     securityGroupForECS.addIngressRule(securityGroupForALB, Port.tcp(3000), "Allow Rails app inbound traffic");
 
-    // const fileSystem = new FileSystem(this, 'MyEfsFileSystem', {
-    //   vpc: vpc,
-    //   encrypted: true,
-    //   removalPolicy: RemovalPolicy.DESTROY,
-    //   lifecyclePolicy: LifecyclePolicy.AFTER_14_DAYS,
-    //   performanceMode: PerformanceMode.GENERAL_PURPOSE,
-    //   throughputMode: ThroughputMode.BURSTING
-    // });
+    // EFS向けセキュリティグループ
+    const securityGroupForEFS = new SecurityGroup(this, 'SecurityGroupForEFS', {
+      securityGroupName: `${resourceName}-security-group-for-EFS`,
+      vpc: vpc,
+      description: "Allow NFS inbound traffic. Allow all outbound traffic.",
+      allowAllOutbound: true
+    });
+    securityGroupForEFS.addIngressRule(securityGroupForECS, Port.NFS, "Allow NFS inbound traffic");
 
-    // fileSystem.addToResourcePolicy(
-    //   new PolicyStatement({
-    //     actions: ['elasticfilesystem:ClientMount'],
-    //     principals: [new AnyPrincipal()],
-    //     conditions: {
-    //       Bool: {
-    //         'elasticfilesystem:AccessedViaMountTarget': 'true'
-    //       }
-    //     }
-    //   })
-    // );
+    // EFSを作成する
+    const fileSystem = new FileSystem(this, 'MyEfsFileSystem', {
+      vpc: vpc,
+      encrypted: true,
+      removalPolicy: RemovalPolicy.DESTROY,
+      lifecyclePolicy: LifecyclePolicy.AFTER_14_DAYS,
+      performanceMode: PerformanceMode.GENERAL_PURPOSE,
+      throughputMode: ThroughputMode.BURSTING
+    });
+
+    // EFSのパブリックアクセスは禁止
+    fileSystem.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ['elasticfilesystem:ClientMount'],
+        principals: [new AnyPrincipal()],
+        conditions: {
+          Bool: {
+            'elasticfilesystem:AccessedViaMountTarget': 'true'
+          }
+        }
+      })
+    );
 
     const taskDef = new FargateTaskDefinition(this, "MyTaskDef", {
       memoryLimitMiB: 512,
@@ -65,14 +78,14 @@ export class EcsWithEfsStack extends Stack {
         operatingSystemFamily: OperatingSystemFamily.LINUX,
         cpuArchitecture: CpuArchitecture.ARM64
       },
-      // volumes: [
-      //   {
-      //     name: "uploads",
-      //     efsVolumeConfiguration: {
-      //       fileSystemId: fileSystem.fileSystemId,
-      //     }
-      //   }
-      // ]
+      volumes: [
+        {
+          name: "dbfile",
+          efsVolumeConfiguration: {
+            fileSystemId: fileSystem.fileSystemId,
+          }
+        }
+      ]
     });
 
     const containerDef = new ContainerDefinition(this, 'MyContainerDefinition', {
@@ -87,13 +100,13 @@ export class EcsWithEfsStack extends Stack {
       }
     });
 
-    // containerDef.addMountPoints(
-    //   {
-    //     containerPath: '/uploads',
-    //     sourceVolume: 'uploads',
-    //     readOnly: false
-    //   }
-    // );
+    containerDef.addMountPoints(
+      {
+        containerPath: '/mnt/efs',
+        sourceVolume: 'dbfile',
+        readOnly: false
+      }
+    );
 
     containerDef.addPortMappings({
       containerPort: 3000,
@@ -151,7 +164,7 @@ export class EcsWithEfsStack extends Stack {
       }
     });
 
-    // fileSystem.grantRootAccess(albFargateService.taskDefinition.taskRole.grantPrincipal);
-    // fileSystem.connections.allowDefaultPortFrom(albFargateService.service.connections);
+    fileSystem.grantRootAccess(fargateService.taskDefinition.taskRole.grantPrincipal);
+    fileSystem.connections.allowDefaultPortFrom(fargateService.connections);
   }
 }
