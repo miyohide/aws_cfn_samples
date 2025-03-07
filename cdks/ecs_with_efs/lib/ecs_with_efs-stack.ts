@@ -39,15 +39,6 @@ export class EcsWithEfsStack extends Stack {
     });
     securityGroupForECS.addIngressRule(securityGroupForALB, Port.tcp(3000), "Allow Rails app inbound traffic");
 
-    // EFS向けセキュリティグループ
-    const securityGroupForEFS = new SecurityGroup(this, 'SecurityGroupForEFS', {
-      securityGroupName: `${resourceName}-security-group-for-EFS`,
-      vpc: vpc,
-      description: "Allow NFS inbound traffic. Allow all outbound traffic.",
-      allowAllOutbound: true
-    });
-    securityGroupForEFS.addIngressRule(securityGroupForECS, Port.NFS, "Allow NFS inbound traffic");
-
     // EFSを作成する
     const fileSystem = new FileSystem(this, 'MyEfsFileSystem', {
       vpc: vpc,
