@@ -1,6 +1,6 @@
 import { Peer, Port, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Cluster, ContainerDefinition, ContainerImage, CpuArchitecture, FargateService, FargateTaskDefinition, LogDrivers, OperatingSystemFamily } from 'aws-cdk-lib/aws-ecs';
-import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode } from 'aws-cdk-lib/aws-efs';
+import { AccessPoint, FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode } from 'aws-cdk-lib/aws-efs';
 import { ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup, Protocol, TargetType } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { AnyPrincipal, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
@@ -71,6 +71,21 @@ export class EcsWithEfsStack extends Stack {
       })
     );
 
+    // アクセスポイントの作成
+    const accessPoint = new AccessPoint(this, 'EFSAccessPoint', {
+      fileSystem: fileSystem,
+      path: '/',
+      posixUser: {
+        uid: '1000',
+        gid: '1000'
+      },
+      createAcl: {
+        ownerGid: '1000',
+        ownerUid: '1000',
+        permissions: '755'
+      },
+    })
+
     const taskDef = new FargateTaskDefinition(this, "MyTaskDef", {
       memoryLimitMiB: 512,
       cpu: 256,
@@ -83,6 +98,11 @@ export class EcsWithEfsStack extends Stack {
           name: "dbfile",
           efsVolumeConfiguration: {
             fileSystemId: fileSystem.fileSystemId,
+            authorizationConfig: {
+              accessPointId: accessPoint.accessPointId,
+              iam: "ENABLED"
+            },
+            transitEncryption: "ENABLED"
           }
         }
       ]
