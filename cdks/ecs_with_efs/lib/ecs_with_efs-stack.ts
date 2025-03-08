@@ -65,7 +65,7 @@ export class EcsWithEfsStack extends Stack {
     // アクセスポイントの作成
     const accessPoint = new AccessPoint(this, 'EFSAccessPoint', {
       fileSystem: fileSystem,
-      path: '/',
+      path: '/mnt/efs',
       posixUser: {
         uid: '1000',
         gid: '1000'
