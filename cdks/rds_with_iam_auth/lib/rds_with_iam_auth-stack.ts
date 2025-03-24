@@ -16,7 +16,7 @@ export class RdsWithIamAuthStack extends cdk.Stack {
           // EC2用
           cidrMask: 24,
           name: 'ec2',
-          subnetType: SubnetType.PRIVATE_WITH_EGRESS
+          subnetType: SubnetType.PRIVATE_ISOLATED
         },
         {
           // RDS用
