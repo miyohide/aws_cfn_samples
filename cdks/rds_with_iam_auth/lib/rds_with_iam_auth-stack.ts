@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { Instance, InstanceClass, InstanceSize, InstanceType, MachineImage, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 
 export class RdsWithIamAuthStack extends cdk.Stack {
@@ -26,5 +26,19 @@ export class RdsWithIamAuthStack extends cdk.Stack {
         }
       ]
     });
+
+    const ec2Subnet = vpc.selectSubnets({
+      subnetGroupName: 'ec2'
+    });
+
+    // EC2インスタンスを作成する
+    const ec2 = new Instance(this, "MyEC2", {
+      instanceType: InstanceType.of(
+        InstanceClass.T3, InstanceSize.MICRO
+      ),
+      machineImage: MachineImage.latestAmazonLinux2023(),
+      vpc: vpc,
+      vpcSubnets: ec2Subnet,
+    })
   }
 }
