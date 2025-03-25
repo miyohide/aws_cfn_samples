@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { Instance, InstanceClass, InstanceSize, InstanceType, MachineImage, SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { GatewayVpcEndpointAwsService, Instance, InstanceClass, InstanceSize, InstanceType, MachineImage, SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { CfnInstanceProfile, ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
@@ -31,6 +31,12 @@ export class RdsWithIamAuthStack extends cdk.Stack {
 
     const ec2Subnet = vpc.selectSubnets({
       subnetGroupName: 'ec2'
+    });
+
+    // GatewayタイプのVPCエンドポイントを作成
+    vpc.addGatewayEndpoint('S3Endpoint', {
+      service: GatewayVpcEndpointAwsService.S3,
+      subnets: [ec2Subnet],
     });
 
     // EC2インスタンスプロファイル用IAMロールを作成
