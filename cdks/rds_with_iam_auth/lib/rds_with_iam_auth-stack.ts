@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Instance, InstanceClass, InstanceSize, InstanceType, MachineImage, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { CfnInstanceProfile, ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
 
 export class RdsWithIamAuthStack extends cdk.Stack {
@@ -60,6 +61,12 @@ export class RdsWithIamAuthStack extends cdk.Stack {
       vpc: vpc,
       vpcSubnets: ec2Subnet,
       role: ec2Role,
+    });
+
+    // CloudWatchロググループを作成
+    const logGroup = new LogGroup(this, "MyLogGroupForSSM", {
+      logGroupName: "/ssm/ec2/session",
+      retention: RetentionDays.ONE_DAY
     });
   }
 }
