@@ -1,7 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
 import { GatewayVpcEndpointAwsService, Instance, InstanceClass, InstanceSize, InstanceType, MachineImage, SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
-import { CfnInstanceProfile, ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { CfnInstanceProfile, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { SubnetGroup } from 'aws-cdk-lib/aws-rds';
 import { Construct } from 'constructs';
 
 export class RdsWithIamAuthStack extends cdk.Stack {
@@ -31,6 +32,9 @@ export class RdsWithIamAuthStack extends cdk.Stack {
 
     const ec2Subnet = vpc.selectSubnets({
       subnetGroupName: 'ec2'
+    });
+    const dbSubnet = vpc.selectSubnets({
+      subnetGroupName: 'rds'
     });
 
     // GatewayタイプのVPCエンドポイントを作成
@@ -81,5 +85,14 @@ export class RdsWithIamAuthStack extends cdk.Stack {
       allowAllOutbound: true,
       description: "Security Group for RDS"
     });
+
+    // RDSサブネットグループを作成する
+    const dbSubnetGroup = new SubnetGroup(this, "dbSubnetGroup", {
+      vpc: vpc,
+      subnetGroupName: "MyRDSSubnetGroup",
+      vpcSubnets: dbSubnet,
+      description: "Subnet Group for RDS"
+    });
+
   }
 }
