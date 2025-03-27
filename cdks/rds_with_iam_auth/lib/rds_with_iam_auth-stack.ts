@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { RemovalPolicy } from 'aws-cdk-lib';
+import { Aws, RemovalPolicy } from 'aws-cdk-lib';
 import { GatewayVpcEndpointAwsService, Instance, InstanceClass, InstanceSize, InstanceType, MachineImage, SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { CfnInstanceProfile, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
@@ -108,6 +108,17 @@ export class RdsWithIamAuthStack extends cdk.Stack {
       removalPolicy: RemovalPolicy.DESTROY,
       iamAuthentication: true,
     });
+
+    ec2Role.addToPolicy(
+      new PolicyStatement({
+        actions: [
+          "rds-db:connect"
+        ],
+        resources: [
+          `arn:aws:rds-db:${Aws.REGION}:${Aws.ACCOUNT_ID}:dbuser:${rdsInstance.instanceResourceId}/myiam_db_user`
+        ]
+      })
+    );
 
     rdsInstance.connections.allowDefaultPortFrom(ec2, "allow connect from ec2");
   }
