@@ -108,5 +108,7 @@ export class RdsWithIamAuthStack extends cdk.Stack {
       removalPolicy: RemovalPolicy.DESTROY,
       iamAuthentication: true,
     });
+
+    rdsInstance.connections.allowDefaultPortFrom(ec2, "allow connect from ec2");
   }
 }
