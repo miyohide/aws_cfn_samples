@@ -3,7 +3,8 @@ import { Aws, RemovalPolicy } from 'aws-cdk-lib';
 import { GatewayVpcEndpointAwsService, Instance, InstanceClass, InstanceSize, InstanceType, MachineImage, SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
-import { DatabaseInstance, DatabaseInstanceEngine, SubnetGroup } from 'aws-cdk-lib/aws-rds';
+import { Credentials, DatabaseInstance, DatabaseInstanceEngine, SubnetGroup } from 'aws-cdk-lib/aws-rds';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from 'constructs';
 
 export class RdsWithIamAuthStack extends cdk.Stack {
@@ -80,6 +81,19 @@ export class RdsWithIamAuthStack extends cdk.Stack {
       retention: RetentionDays.ONE_DAY
     });
 
+    // RDS用の認証情報
+    const secret = new Secret(this, "MyDBCredentialSecrets", {
+      secretName: "MyDBCredentialSecret",
+      generateSecretString: {
+        secretStringTemplate: JSON.stringify({
+          username: "postgres"
+        }),
+        excludePunctuation: true,
+        includeSpace: false,
+        generateStringKey: "password"
+      },
+    });
+
     // RDS用セキュリティグループを作成
     const rdsSG = new SecurityGroup(this, "MySecurityGroupForRDS", {
       vpc: vpc,
@@ -107,6 +121,7 @@ export class RdsWithIamAuthStack extends cdk.Stack {
       securityGroups: [rdsSG],
       removalPolicy: RemovalPolicy.DESTROY,
       iamAuthentication: true,
+      credentials: Credentials.fromSecret(secret)
     });
 
     ec2Role.addToPolicy(
