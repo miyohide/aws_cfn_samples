@@ -107,6 +107,6 @@ export class RdsWithIamAuthStack extends cdk.Stack {
       securityGroups: [rdsSG],
       removalPolicy: RemovalPolicy.DESTROY,
       iamAuthentication: true,
-    })
+    });
   }
 }
