@@ -1,8 +1,9 @@
 import * as cdk from 'aws-cdk-lib';
+import { RemovalPolicy } from 'aws-cdk-lib';
 import { GatewayVpcEndpointAwsService, Instance, InstanceClass, InstanceSize, InstanceType, MachineImage, SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { CfnInstanceProfile, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
-import { SubnetGroup } from 'aws-cdk-lib/aws-rds';
+import { DatabaseInstance, DatabaseInstanceEngine, SubnetGroup } from 'aws-cdk-lib/aws-rds';
 import { Construct } from 'constructs';
 
 export class RdsWithIamAuthStack extends cdk.Stack {
@@ -94,5 +95,18 @@ export class RdsWithIamAuthStack extends cdk.Stack {
       description: "Subnet Group for RDS"
     });
 
+    // RDSインスタンスを作成（PostgreSQL）
+    const rdsInstance = new DatabaseInstance(this, "MyRDSInstance", {
+      instanceIdentifier: "MyRDSInstancePostgreSQL",
+      vpc: vpc,
+      engine: DatabaseInstanceEngine.POSTGRES,
+      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.MICRO),
+      databaseName: "mypostgredb",
+      multiAz: false,
+      subnetGroup: dbSubnetGroup,
+      securityGroups: [rdsSG],
+      removalPolicy: RemovalPolicy.DESTROY,
+      iamAuthentication: true,
+    })
   }
 }
