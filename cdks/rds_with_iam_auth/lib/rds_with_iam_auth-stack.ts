@@ -14,14 +14,13 @@ export class RdsWithIamAuthStack extends cdk.Stack {
     // VPCを作成する
     const vpc = new Vpc(this, 'Vpc', {
       vpcName: 'MyVPC',
-      natGateways: 0,
       maxAzs: 2,
       subnetConfiguration: [
         {
           // EC2用
           cidrMask: 24,
           name: 'ec2',
-          subnetType: SubnetType.PRIVATE_ISOLATED
+          subnetType: SubnetType.PRIVATE_WITH_EGRESS
         },
         {
           // RDS用
