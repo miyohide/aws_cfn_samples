@@ -17,6 +17,12 @@ export class RdsWithIamAuthStack extends cdk.Stack {
       maxAzs: 2,
       subnetConfiguration: [
         {
+          // パブリックサブネット用
+          cidrMask: 24,
+          name: 'public',
+          subnetType: SubnetType.PUBLIC
+        },
+        {
           // EC2用
           cidrMask: 24,
           name: 'ec2',
