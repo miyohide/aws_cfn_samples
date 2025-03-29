@@ -163,17 +163,17 @@ export class RdsWithIamAuthStack extends cdk.Stack {
     });
 
     // rdsInstance.grantConnect(ec2Role);
-    // // ec2Role.addToPolicy(
-    // //   new PolicyStatement({
-    // //     actions: [
-    // //       "rds-db:connect"
-    // //     ],
-    // //     resources: [
-    // //       `arn:aws:rds-db:${Aws.REGION}:${Aws.ACCOUNT_ID}:dbuser:${rdsInstance.instanceResourceId}/myiam_db_user`
-    // //     ]
-    // //   })
-    // // );
+    ec2Role.addToPolicy(
+      new PolicyStatement({
+        actions: [
+          "rds-db:connect"
+        ],
+        resources: [
+          `arn:aws:rds-db:${Aws.REGION}:${Aws.ACCOUNT_ID}:dbuser:${rdsInstance.instanceResourceId}/myiam_db_user`
+        ]
+      })
+    );
 
-    // rdsInstance.connections.allowDefaultPortFrom(ec2, "allow connect from ec2");
+    rdsInstance.connections.allowDefaultPortFrom(ec2, "allow connect from ec2");
   }
 }
