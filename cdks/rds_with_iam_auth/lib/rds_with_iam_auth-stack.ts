@@ -38,6 +38,13 @@ export class RdsWithIamAuthStack extends cdk.Stack {
       ]
     });
 
+    const ec2Subnet = vpc.selectSubnets({
+      subnetGroupName: 'ec2'
+    });
+    const dbSubnet = vpc.selectSubnets({
+      subnetGroupName: 'rds'
+    });
+
     // EC2用セキュリティグループ
     const ec2SecurityGroup = new SecurityGroup(this, 'EC2SecurityGroup', {
       securityGroupName: 'EC2SecurityGroup',
@@ -55,24 +62,20 @@ export class RdsWithIamAuthStack extends cdk.Stack {
     // SSMエンドポイントの設定
     vpc.addInterfaceEndpoint('SSMEndpoint', {
       service: InterfaceVpcEndpointAwsService.SSM,
-      securityGroups: [ssmSecurityGroup]
+      securityGroups: [ssmSecurityGroup],
+      subnets: ec2Subnet
     });
     vpc.addInterfaceEndpoint('SSMMessagesEndpoint', {
       service: InterfaceVpcEndpointAwsService.SSM_MESSAGES,
-      securityGroups: [ssmSecurityGroup]
+      securityGroups: [ssmSecurityGroup],
+      subnets: ec2Subnet
     });
     vpc.addInterfaceEndpoint('EC2MessagesEndpoint', {
       service: InterfaceVpcEndpointAwsService.EC2_MESSAGES,
-      securityGroups: [ssmSecurityGroup]
+      securityGroups: [ssmSecurityGroup],
+      subnets: ec2Subnet
     });
     ssmSecurityGroup.addIngressRule(ec2SecurityGroup, Port.HTTPS);
-
-    const ec2Subnet = vpc.selectSubnets({
-      subnetGroupName: 'ec2'
-    });
-    const dbSubnet = vpc.selectSubnets({
-      subnetGroupName: 'rds'
-    });
 
     // GatewayタイプのVPCエンドポイントを作成
     vpc.addGatewayEndpoint('S3Endpoint', {
