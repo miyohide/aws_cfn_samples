@@ -119,48 +119,48 @@ export class RdsWithIamAuthStack extends cdk.Stack {
       retention: RetentionDays.ONE_DAY
     });
 
-    // // RDS用の認証情報
-    // const secret = new Secret(this, "MyDBCredentialSecrets", {
-    //   secretName: "MyDBCredentialSecret",
-    //   generateSecretString: {
-    //     secretStringTemplate: JSON.stringify({
-    //       username: "postgres"
-    //     }),
-    //     excludePunctuation: true,
-    //     includeSpace: false,
-    //     generateStringKey: "password"
-    //   },
-    // });
+    // RDS用の認証情報
+    const secret = new Secret(this, "MyDBCredentialSecrets", {
+      secretName: "MyDBCredentialSecret",
+      generateSecretString: {
+        secretStringTemplate: JSON.stringify({
+          username: "postgres"
+        }),
+        excludePunctuation: true,
+        includeSpace: false,
+        generateStringKey: "password"
+      },
+    });
 
-    // // RDS用セキュリティグループを作成
-    // const rdsSG = new SecurityGroup(this, "MySecurityGroupForRDS", {
-    //   vpc: vpc,
-    //   allowAllOutbound: true,
-    //   description: "Security Group for RDS"
-    // });
+    // RDS用セキュリティグループを作成
+    const rdsSG = new SecurityGroup(this, "MySecurityGroupForRDS", {
+      vpc: vpc,
+      allowAllOutbound: true,
+      description: "Security Group for RDS"
+    });
 
-    // // RDSサブネットグループを作成する
-    // const dbSubnetGroup = new SubnetGroup(this, "dbSubnetGroup", {
-    //   vpc: vpc,
-    //   subnetGroupName: "MyRDSSubnetGroup",
-    //   vpcSubnets: dbSubnet,
-    //   description: "Subnet Group for RDS"
-    // });
+    // RDSサブネットグループを作成する
+    const dbSubnetGroup = new SubnetGroup(this, "dbSubnetGroup", {
+      vpc: vpc,
+      subnetGroupName: "MyRDSSubnetGroup",
+      vpcSubnets: dbSubnet,
+      description: "Subnet Group for RDS"
+    });
 
-    // // RDSインスタンスを作成（PostgreSQL）
-    // const rdsInstance = new DatabaseInstance(this, "MyRDSInstance", {
-    //   instanceIdentifier: "MyRDSInstancePostgreSQL",
-    //   vpc: vpc,
-    //   engine: DatabaseInstanceEngine.POSTGRES,
-    //   instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.MICRO),
-    //   databaseName: "mypostgredb",
-    //   multiAz: false,
-    //   subnetGroup: dbSubnetGroup,
-    //   securityGroups: [rdsSG],
-    //   removalPolicy: RemovalPolicy.DESTROY,
-    //   iamAuthentication: true,
-    //   credentials: Credentials.fromSecret(secret)
-    // });
+    // RDSインスタンスを作成（PostgreSQL）
+    const rdsInstance = new DatabaseInstance(this, "MyRDSInstance", {
+      instanceIdentifier: "MyRDSInstancePostgreSQL",
+      vpc: vpc,
+      engine: DatabaseInstanceEngine.POSTGRES,
+      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.MICRO),
+      databaseName: "mypostgredb",
+      multiAz: false,
+      subnetGroup: dbSubnetGroup,
+      securityGroups: [rdsSG],
+      removalPolicy: RemovalPolicy.DESTROY,
+      iamAuthentication: true,
+      credentials: Credentials.fromSecret(secret)
+    });
 
     // rdsInstance.grantConnect(ec2Role);
     // // ec2Role.addToPolicy(
