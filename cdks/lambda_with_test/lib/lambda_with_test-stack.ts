@@ -3,6 +3,7 @@ import { CfnSchema } from 'aws-cdk-lib/aws-eventschemas';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
+import path from 'node:path';
 
 export class LambdaWithTestStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -13,7 +14,7 @@ export class LambdaWithTestStack extends cdk.Stack {
     // AWS CDKを使ってRubyランタイムのLambda関数を作成する
     new NodejsFunction(this, `${id}-TestFunction`, {
       runtime: Runtime.NODEJS_LATEST,
-      entry: 'lambda/handler.rb',
+      entry: path.join(__dirname, '../lambda/mylambda.ts'),
       handler: 'handler',
       functionName: lambdaName
     });
