@@ -11,23 +11,21 @@ export class LambdaWithTestStack extends cdk.Stack {
     // AWS CDKを使ってRubyランタイムのLambda関数を作成する
     const lambdaFunction = new cdk.aws_lambda.Function(this, 'RubyLambda', {
       functionName: lambdaName,
-      runtime: cdk.aws_lambda.Runtime.RUBY_3_4,
+      runtime: cdk.aws_lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       code: cdk.aws_lambda.Code.fromInline(`
-require 'json'
-
-def handler(event:, context:)
-  message = event['message'] || 'Hello'
-  time = Time.now.strftime('%Y-%m-%d %H:%M:%S')
-  response = {
+exports.handler = async (event) => {
+  const message = event['message'] || 'Hello'
+  const time = new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })
+  const response = {
     "statusCode": 200,
-    "body": JSON.generate({
+    "body": JSON.stringify({
       message: message,
       time: time
     })
   }
-  response
-end
+  return response
+};
       `),
       memorySize: 128,
       timeout: cdk.Duration.seconds(30),
