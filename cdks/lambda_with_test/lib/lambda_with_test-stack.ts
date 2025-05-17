@@ -6,7 +6,7 @@ export class LambdaWithTestStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const lambdaName = 'ruby-lambda-with-test'
+    const lambdaName = 'nodejs-lambda-with-test'
 
     // AWS CDKを使ってRubyランタイムのLambda関数を作成する
     const lambdaFunction = new cdk.aws_lambda.Function(this, 'RubyLambda', {
@@ -37,30 +37,30 @@ exports.handler = async (event) => {
       type: 'OpenApi3',
       schemaName: `_${lambdaName}-schema`,
       content: JSON.stringify({
-        "openapi": "3.0.0",
-        "info": {
-          "version": "1.0.0",
-          "title": "TestEvent"
+        openapi: "3.0.0",
+        info: {
+          version: "1.0.0",
+          title: "Event"
         },
-        "paths": {},
-        "components": {
-          "schemas": {
-            "Event": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string"
+        paths: {},
+        components: {
+          schemas: {
+            Event: {
+              type: "object",
+              properties: {
+                message: {
+                  type: "string"
                 }
               },
-              "required": [
+              required: [
                 "message"
               ]
             }
           },
           examples: {
             "sample1": {
-              "value": {
-                "message": "Hello from Lambda!"
+              value: {
+                message: "Hello from Lambda!"
               }
             }
           }
