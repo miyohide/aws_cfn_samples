@@ -13,6 +13,7 @@ export class LambdaWithTestStack extends cdk.Stack {
     // AWS CDKを使ってRubyランタイムのLambda関数を作成する
     new NodejsFunction(this, `${id}-TestFunction`, {
       runtime: Runtime.NODEJS_LATEST,
+      entry: 'lambda/handler.rb',
       handler: 'handler',
       functionName: lambdaName
     });
