@@ -17,11 +17,12 @@ export class LambdaWithTestStack extends cdk.Stack {
 require 'json'
 
 def handler(event:, context:)
+  message = event['message'] || 'Hello'
   time = Time.now.strftime('%Y-%m-%d %H:%M:%S')
   response = {
     "statusCode": 200,
     "body": JSON.generate({
-      message: 'Hello from Lambda!',
+      message: message,
       time: time
     })
   }
