@@ -1,5 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { CfnSchema } from 'aws-cdk-lib/aws-eventschemas';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 
 export class LambdaWithTestStack extends cdk.Stack {
@@ -9,27 +11,32 @@ export class LambdaWithTestStack extends cdk.Stack {
     const lambdaName = 'nodejs-lambda-with-test'
 
     // AWS CDKを使ってRubyランタイムのLambda関数を作成する
-    const lambdaFunction = new cdk.aws_lambda.Function(this, 'RubyLambda', {
-      functionName: lambdaName,
-      runtime: cdk.aws_lambda.Runtime.NODEJS_LATEST,
-      handler: 'index.handler',
-      code: cdk.aws_lambda.Code.fromInline(`
-exports.handler = async (event) => {
-  const message = event['message'] || 'Hello'
-  const time = new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })
-  const response = {
-    "statusCode": 200,
-    "body": JSON.stringify({
-      message: message,
-      time: time
-    })
-  }
-  return response
-};
-      `),
-      memorySize: 128,
-      timeout: cdk.Duration.seconds(30),
+    new NodejsFunction(this, `${id}-TestFunction`, {
+      runtime: Runtime.NODEJS_LATEST,
+      handler: 'handler',
+      functionName: lambdaName
     });
+//     const lambdaFunction = new cdk.aws_lambda.Function(this, 'RubyLambda', {
+//       functionName: lambdaName,
+//       runtime: cdk.aws_lambda.Runtime.NODEJS_LATEST,
+//       handler: 'index.handler',
+//       code: cdk.aws_lambda.Code.fromInline(`
+// exports.handler = async (event) => {
+//   const message = event['message'] || 'Hello'
+//   const time = new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })
+//   const response = {
+//     "statusCode": 200,
+//     "body": JSON.stringify({
+//       message: message,
+//       time: time
+//     })
+//   }
+//   return response
+// };
+//       `),
+//       memorySize: 128,
+//       timeout: cdk.Duration.seconds(30),
+//     });
 
     // testEventを作成
     new CfnSchema(this, `${id}-CfnSchema`, {
