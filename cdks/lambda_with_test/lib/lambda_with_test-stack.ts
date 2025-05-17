@@ -3,8 +3,7 @@ import { CfnSchema } from 'aws-cdk-lib/aws-eventschemas';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
-import path from 'node:path';
-
+import path from 'path';
 export class LambdaWithTestStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
